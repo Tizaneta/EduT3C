@@ -13,7 +13,8 @@ import 'package:edut3c/main.dart';
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(MyApp()); // Al lado de MyApp(), estaba declarado como constante "const", pero al no serlo, lo quité. 
+    //Porque esperaba un widget que no es constante, y me daba error. Al no estar el codigo del testeo demo original.
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
