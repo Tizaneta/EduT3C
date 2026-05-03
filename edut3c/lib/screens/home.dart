@@ -1,6 +1,8 @@
+import 'NetScreen.dart';
+import 'SoftwareScreen.dart';
 import 'package:flutter/material.dart';
-import 'hardware_screen.dart';
-class Home extends StatelessWidget {
+import 'HardwareScreen.dart';
+/*class Home extends StatelessWidget {
 @override
 Widget build(BuildContext context) {
   return Scaffold(
@@ -9,21 +11,50 @@ Widget build(BuildContext context) {
     ),
     body: Center(
       child: Column(
-      children: [
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  children: [
         ElevatedButton(onPressed: (){
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => hardware_screen()),
-  );
-}, child: Text("Hardware")),
-        SizedBox(height: 30),
-        ElevatedButton(onPressed:(){print("Entraste a SO");}, child: Text("Sistemas Operativos")),
-        SizedBox(height: 30),
-        ElevatedButton(onPressed: (){print("Entraste a programacion");}, child: Text("Programación")),
-        SizedBox(height: 30),
+        Navigator.push
+        (context,
+        MaterialPageRoute(builder: (context) => HardwareScreen()),);
+        }, 
+    child: Text("Hardware")),
+        SizedBox(height: 60),
+        ElevatedButton(onPressed:(){Navigator.push
+        (context, 
+        MaterialPageRoute(builder:(context) => SoftwareScreen()),);
+        }, 
+    child: Text("Software")),
+        SizedBox(height: 60),
+        ElevatedButton(onPressed: (){Navigator.push
+        (context, 
+        MaterialPageRoute(builder: (context) => NetScreen()));
+        },
+        style: ElevatedButton.styleFrom(
+          padding: EdgeInsets.all(30),
+          backgroundColor: const Color.fromARGB(255, 255, 255, 250),  
+        ),
+    child: Text("Redes")),
+        SizedBox(height: 60),
       ]
       ),
       ),
   );
 }
+}
+*/
+class Home extends StatelessWidget{
+@override
+  Widget build(BuildContext context){
+  return Scaffold(
+    body: PageView(
+      children: [
+        HardwareScreen(),
+        SoftwareScreen(),
+        NetScreen(),
+      ],
+    )
+  );
+  }
 }
