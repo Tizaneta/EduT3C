@@ -1,3 +1,5 @@
+import 'package:edut3c/screens/LevelScreen.dart';
+
 import 'NetScreen.dart';
 import 'SoftwareScreen.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +55,7 @@ class Home extends StatelessWidget{
         HardwareScreen(),
         SoftwareScreen(),
         NetScreen(),
+        LevelScreen(levelNumber: 1),
       ],
     )
   );

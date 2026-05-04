@@ -15,7 +15,8 @@ class HardwareScreen extends StatelessWidget {
         ElevatedButton(onPressed: (){
           Navigator.push(context, 
           MaterialPageRoute(builder: (context) => StationScreens(title: "Microprocesador", 
-          description: "Aca tenes todos los niveles de microprocesador."),
+          levels: 7,
+          ),
         ),
         );
         }, // Aca termina el boton y abajo esta el child
@@ -25,8 +26,9 @@ class HardwareScreen extends StatelessWidget {
 
         ElevatedButton(onPressed: (){
           Navigator.push(context,
-          MaterialPageRoute(builder: (context) => StationScreens(title: "GPU", 
-          description: "Aca tenes todos los niveles de GPU.")
+          MaterialPageRoute(builder: (context) => StationScreens(title: "GPU",
+          levels: 5, 
+          )
         ),
         );
         }, 
@@ -36,7 +38,8 @@ class HardwareScreen extends StatelessWidget {
         ElevatedButton(onPressed: (){
           Navigator.push(context, 
           MaterialPageRoute(builder: (context) => StationScreens(title: "Discos SSD/HDD", 
-          description: "En minecraft java existen distintos tipos de abetos")
+          levels: 5,
+          )
         
         ),
         );
@@ -44,8 +47,9 @@ class HardwareScreen extends StatelessWidget {
         SizedBox(height: 40),
 
         ElevatedButton(onPressed: (){Navigator.push(context,
-        MaterialPageRoute(builder:(context) => StationScreens(title: "ya esta flaco cuantos botones mas queres", 
-        description: "aca pone algo distinto flaco"),
+        MaterialPageRoute(builder:(context) => StationScreens(title: "cuantos botones queres", 
+        levels: 3
+        ),
         )
         );
         }, child: Text("any another device")),
