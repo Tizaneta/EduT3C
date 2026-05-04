@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-class SectionScreens extends StatelessWidget{
+class StationScreens extends StatelessWidget{
   final String title;
   final  String description;
 
-    const SectionScreens({
+    const StationScreens({
       super.key,
       required this.title,
       required this.description,
@@ -12,7 +12,7 @@ class SectionScreens extends StatelessWidget{
 Widget build(BuildContext context){
   return Scaffold(
     appBar: AppBar(
-      title: Text("Hardware")
+      title: Text(title)
     ),
     body: Center(
       child: Text(description),
