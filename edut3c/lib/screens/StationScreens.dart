@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'LevelScreen.dart';
 class StationScreens extends StatelessWidget{
   final String title;
   final int levels;
@@ -19,21 +19,17 @@ Widget build(BuildContext context){
       itemBuilder: (context, index){
         return Padding(
           padding: EdgeInsets.all(10),
-          child: ElevatedButton(onPressed: (){
-            debugPrint("Entraste al nivel $index.");
+          child: ElevatedButton(onPressed: (){Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => LevelScreen(levelNumber: index + 1),
+    ),);
           }, 
           child: Text("Nivel ${index + 1}")
           ),
-
-
         );
       },
       )
-    /*body: Column(
-      children: [Text(description),
-       Text("Nivel $levels")
-      ]
-    )*/
   );
 }
 }
