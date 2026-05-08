@@ -1,61 +1,71 @@
-import 'HardwareScreen.dart';
-import 'NetScreen.dart';
-import 'SoftwareScreen.dart';
-import 'StationScreens.dart';
 import 'package:flutter/material.dart';
 import '../widgets/video_block.dart';
 
-class LevelScreen extends StatelessWidget {
+class LevelScreen extends StatefulWidget {
   final int levelNumber;
-  LevelScreen({required this.levelNumber});
-  final List<String> contenido = [
-    "Video",
-    "Cuestionario",
-    "Video",
-    "Cuestionario",
-    "Video",
-    "Cuestionario",
-    "Video",
-    "Cuestionario",
-    "Video",
-    "Cuestionario",
-    "Video",
-    "Cuestionario",
+
+  const LevelScreen({
+    super.key,
+    required this.levelNumber
+    });
+  @override
+  State<LevelScreen> createState() => _LevelScreenState();
+}
+
+
+class _LevelScreenState extends State<LevelScreen>{
+
+final List<Map<String, dynamic>> contenido = [
+    {
+      "type": "video",
+      "path": "assets/videos/test.mp4",
+    },
+
+    {
+      "type": "quiz",
+      "question": "¿Qué hace la CPU?",
+    },
   ];
 
-  @override
-
+@override
   Widget build(BuildContext context){
     return Scaffold(
-    appBar: AppBar(title: Text("Nivel $levelNumber")),
+    appBar: AppBar(title: Text("Nivel ${widget.levelNumber}")),
     body: 
     PageView.builder(
       scrollDirection: Axis.vertical,
       itemCount: contenido.length,
       itemBuilder: (context, index){
-        if (contenido[index] == "Video") {
+        if (contenido[index]["type"] == "video") {
   return VideoBlock(
-    assetPath: "assets/videos/test.mp4",
+    assetPath: contenido[index]["path"],
   );
 } else {
-  return Stack(
+  return Stack( //podes poner widgets uno encima de otro.
     children: [
-    Container(
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 4, 125, 206),
-        ),
+  Container(
+      decoration: BoxDecoration(
+      color: const Color.fromARGB(255, 4, 125, 206),
     ),
-      Center(
-        child: Column(
-          children: [
-            Text("Pregunta del nivel $levelNumber"),
+    ),
+  Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+          contenido[index]["question"],
+          style: TextStyle(
+          fontSize: 25,
+          color: Colors.white,
+          ),),
+          SizedBox(height: 30),
             ElevatedButton(
               onPressed: () {},
-              child: Text("Opción A"),
+              child: Text("se caga en tus muertos"),
             ),
             ElevatedButton(
               onPressed: () {},
-              child: Text("Opción B"),
+              child: Text("Procesa las instrucciones de entrada"),
             ),],
         ),),],
   );}
@@ -64,5 +74,9 @@ class LevelScreen extends StatelessWidget {
     );
   }
 }
+  
+
+  
+
   
     
