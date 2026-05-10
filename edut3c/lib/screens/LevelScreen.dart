@@ -3,10 +3,12 @@ import '../widgets/video_block.dart';
 
 class LevelScreen extends StatefulWidget {
   final int levelNumber;
+  final List<Map<String, dynamic>> contenido;
 
   const LevelScreen({
     super.key,
-    required this.levelNumber
+    required this.levelNumber,
+    required this.contenido
     });
   @override
   State<LevelScreen> createState() => _LevelScreenState();
@@ -15,17 +17,7 @@ class LevelScreen extends StatefulWidget {
 
 class _LevelScreenState extends State<LevelScreen>{
 
-final List<Map<String, dynamic>> contenido = [
-    {
-      "type": "video",
-      "path": "assets/videos/test.mp4",
-    },
-
-    {
-      "type": "quiz",
-      "question": "¿Qué hace la CPU?",
-    },
-  ];
+ 
 
 @override
   Widget build(BuildContext context){
@@ -34,11 +26,11 @@ final List<Map<String, dynamic>> contenido = [
     body: 
     PageView.builder(
       scrollDirection: Axis.vertical,
-      itemCount: contenido.length,
+      itemCount: widget.contenido.length,
       itemBuilder: (context, index){
-        if (contenido[index]["type"] == "video") {
+        if (widget.contenido[index]["type"] == "video") {
   return VideoBlock(
-    assetPath: contenido[index]["path"],
+    assetPath: widget.contenido[index]["path"],
   );
 } else {
   return Stack( //podes poner widgets uno encima de otro.
@@ -53,20 +45,16 @@ final List<Map<String, dynamic>> contenido = [
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-          contenido[index]["question"],
-          style: TextStyle(
-          fontSize: 25,
-          color: Colors.white,
-          ),),
+          widget.contenido[index]["question"],
+          ),
           SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {},
-              child: Text("se caga en tus muertos"),
-            ),
-            ElevatedButton(
-              onPressed: () {},
-              child: Text("Procesa las instrucciones de entrada"),
-            ),],
+          ...widget.contenido[index]["options"].map((option) {
+          return ElevatedButton(
+          onPressed: () {},
+          child: Text(option),
+          );
+          }).toList(),
+          ],
         ),),],
   );}
       },

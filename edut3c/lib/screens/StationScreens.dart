@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'LevelScreen.dart';
 class StationScreens extends StatelessWidget{
+  final Map<int, List<Map<String, dynamic>>> levelsData;
   final String title;
   final int levels;
     const StationScreens({
       super.key,
+      required this.levelsData,
       required this.title,
       required this.levels,
 });
@@ -22,7 +24,10 @@ Widget build(BuildContext context){
           child: ElevatedButton(onPressed: (){Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => LevelScreen(levelNumber: index + 1),
+     builder: (context) => LevelScreen(
+  levelNumber: index + 1,
+  contenido: levelsData[index + 1]!,
+),
     ),);
           }, 
           child: Text("Nivel ${index + 1}")

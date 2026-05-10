@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'StationScreens.dart';
+import '../data/HardwareData.dart';
 
 class HardwareScreen extends StatelessWidget {
   @override
@@ -16,6 +17,7 @@ class HardwareScreen extends StatelessWidget {
           Navigator.push(context, 
           MaterialPageRoute(builder: (context) => StationScreens(title: "Microprocesador", 
           levels: 7,
+          levelsData: cpuLevels,
           ),
         ),
         );
@@ -28,6 +30,7 @@ class HardwareScreen extends StatelessWidget {
           Navigator.push(context,
           MaterialPageRoute(builder: (context) => StationScreens(title: "GPU",
           levels: 5, 
+          levelsData: gpuLevels,
           )
         ),
         );
@@ -39,6 +42,7 @@ class HardwareScreen extends StatelessWidget {
           Navigator.push(context, 
           MaterialPageRoute(builder: (context) => StationScreens(title: "Discos SSD/HDD", 
           levels: 5,
+          levelsData: ssdhddLevels,
           )
         
         ),
@@ -48,7 +52,8 @@ class HardwareScreen extends StatelessWidget {
 
         ElevatedButton(onPressed: (){Navigator.push(context,
         MaterialPageRoute(builder:(context) => StationScreens(title: "cuantos botones queres", 
-        levels: 3
+        levels: 3,
+        levelsData: {},
         ),
         )
         );
