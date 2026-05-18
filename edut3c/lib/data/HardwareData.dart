@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 final cpuLevels = {
             1: [
               {
@@ -14,6 +12,35 @@ final cpuLevels = {
             "Guarda imágenes",
             "Controla internet",
             ],
+            "correctAnswer": "Procesa instrucciones",
+            },
+            {
+            "type": "video",
+            "path": "assets/videos/test.mp4",
+            },
+            {
+            "type": "quiz",
+            "question": "¿Qué hace el microprocesador?",
+            "options": [
+            "Procesa instrucciones",
+            "Guarda imágenes",
+            "Controla internet",
+            ],
+            "correctAnswer": "Procesa instrucciones",
+            },
+            {
+            "type": "video",
+            "path": "assets/videos/test.mp4",
+            },
+            {
+            "type": "quiz",
+            "question": "¿Qué hace el microprocesador?",
+            "options": [
+            "Procesa instrucciones",
+            "Guarda imágenes",
+            "Controla internet",
+            ],
+            "correctAnswer": "Procesa instrucciones",
             },
             ],
             2: [
