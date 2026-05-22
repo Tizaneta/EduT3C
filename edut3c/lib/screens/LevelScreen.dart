@@ -1,7 +1,9 @@
 import 'dart:async';
-import 'package:edut3c/screens/HardwareScreen.dart';
 import 'package:flutter/material.dart';
 import '../widgets/video_block.dart';
+import 'package:flutter/rendering.dart';
+import '../widgets/nobackscroll.dart';
+
 
 class LevelScreen extends StatefulWidget {
   final int levelNumber;
@@ -32,6 +34,7 @@ class _LevelScreenState extends State<LevelScreen>{
             timer.cancel();
             timeLeft = 7;
             canScroll = true;
+            quizAnswered = true;
             showDialog(context: context, builder: (context){
               return AlertDialog(
                 title: Text("You've run out of time partner!"),
@@ -47,6 +50,7 @@ class _LevelScreenState extends State<LevelScreen>{
     }
     final PageController pageController = PageController();
     bool canScroll = false;
+    bool quizAnswered = false;
     int currentPage = 0;
     
  
@@ -56,20 +60,23 @@ class _LevelScreenState extends State<LevelScreen>{
     final currentType = widget.contenido[currentPage]["type"];
     return Scaffold(
     appBar: AppBar(title: Text("Nivel ${widget.levelNumber}")), 
-    body: 
+    body:  
     PageView.builder(
       onPageChanged: (index) {
       setState(() {
       currentPage = index;
       canScroll = false;
-      if (currentType == "quiz"){startTimer();}
+      quizAnswered = false;
+      final newType = widget.contenido[index]["type"];
+
+      if (newType == "quiz"){startTimer();}
       else{timer?.cancel();}
       });
       },
       controller: pageController,
-      physics: currentType == "video" || canScroll == true
-        ? BouncingScrollPhysics()
-        : NeverScrollableScrollPhysics(),
+      physics: canScroll
+      ? const NoBackScrollPhysics()
+      : const NeverScrollableScrollPhysics(),
       // Usar "type" nos va a permitir que mas adelante podamos 
       // cambiarlo ademas de video y quiz, 
       // por otros tipos de niveles que se piensa integrar
@@ -80,7 +87,18 @@ class _LevelScreenState extends State<LevelScreen>{
         if (widget.contenido[index]["type"] == "video") {
           return VideoBlock(
           assetPath: widget.contenido[index]["path"],
+          onVideoFinished: () {
+            setState(() {
+            canScroll = true;
+            });
+            },
           );
+/*Cuando termina el video:
+VideoBlock avisa a
+LevelScreen, este recibe el evento,
+cambia estado y
+habilita scroll*/
+        
 } else { 
   return Stack( //podes poner widgets uno encima de otro.
     children: [
@@ -100,8 +118,12 @@ class _LevelScreenState extends State<LevelScreen>{
           SizedBox(height: 30),
           ...widget.contenido[index]["options"].map((option) {
           return ElevatedButton(
-          onPressed: () {
+          onPressed: quizAnswered
+          ? null
+          : () 
+          {
             setState(() {
+          quizAnswered = true;
           timer?.cancel();
           timeLeft = 7;
           canScroll = true;
@@ -113,7 +135,10 @@ class _LevelScreenState extends State<LevelScreen>{
       return AlertDialog(
         title: Text("¡Correcto!"),
         content: Text("que quede flipando chaval"),
-        actions: [ElevatedButton(onPressed: (){Navigator.pop(context);
+        actions: [ElevatedButton(onPressed: ()
+        {
+          quizAnswered = true;
+          Navigator.pop(context);
           }, 
           child: Text("anashiiii"))],
       );
@@ -124,7 +149,10 @@ class _LevelScreenState extends State<LevelScreen>{
       return AlertDialog(
         title: Text("¡Incorrecto!"),
         content: Text("que queres queque? que mandas crack que mandas"),
-        actions: [ElevatedButton(onPressed: (){Navigator.pop(context);
+        actions: [ElevatedButton(onPressed: ()
+        {
+          quizAnswered = true;
+          Navigator.pop(context);
           }, 
           child: Text("te voa a rapta"))],
       );
@@ -140,5 +168,6 @@ class _LevelScreenState extends State<LevelScreen>{
       },
     ),
     );
+    
   }
 }
