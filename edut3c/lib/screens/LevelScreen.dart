@@ -35,12 +35,22 @@ class _LevelScreenState extends State<LevelScreen>{
             timeLeft = 7;
             canScroll = true;
             quizAnswered = true;
-            showDialog(context: context, builder: (context){
-              return AlertDialog(
+            showDialog(context: context, 
+            barrierDismissible: false,
+            builder: (context){
+            return PopScope(
+                canPop: false,
+                child: AlertDialog(
                 title: Text("You've run out of time partner!"),
                 content: Text("The correct answer was just like ${widget.contenido[currentPage]["correctAnswer"]}"),
-                actions: [ElevatedButton.icon(onPressed: (){Navigator.pop(context);}, label: Text("Holy shii"))],
-            );
+                actions: [ElevatedButton.icon(onPressed: (){Navigator.pop(context);
+                if (currentPage == widget.contenido.length - 1) 
+                {
+                finishLevel();
+                }
+                }, label: Text("Holy shii"))],
+              ),
+              );
           }
           );
         }
@@ -48,6 +58,32 @@ class _LevelScreenState extends State<LevelScreen>{
         },
       );
     }
+    void finishLevel() {
+        
+        showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+        return PopScope(
+        canPop: false,
+        child: AlertDialog(
+        title: Text("¡Nivel completado!"),
+        content: Text(
+          "Ganaste 120 XP y 45 bits"
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text("Volver")
+          )
+          ],
+        ),
+      );
+        },
+      );
+      }
     final PageController pageController = PageController();
     bool canScroll = false;
     bool quizAnswered = false;
@@ -63,6 +99,17 @@ class _LevelScreenState extends State<LevelScreen>{
     body:  
     PageView.builder(
       onPageChanged: (index) {
+      pageController.jumpToPage(index);
+      /*
+jumpToPage() fuerza al PageView
+a detener cualquier animación
+o inercia restante del scroll.
+
+Esto evita que un swipe fuerte
+salte accidentalmente múltiples páginas
+antes de que el estado canScroll
+sea actualizado.
+*/
       setState(() {
       currentPage = index;
       canScroll = false;
@@ -131,31 +178,49 @@ habilita scroll*/
           final correctAnswer = widget.contenido[index]["correctAnswer"];
       if (option == correctAnswer)
       {
-      showDialog(context: context, builder: (context) {
-      return AlertDialog(
+      showDialog(context: context, 
+      barrierDismissible: false,
+      builder: (context) {
+      return PopScope(
+        canPop: false,
+        child: AlertDialog(
         title: Text("¡Correcto!"),
         content: Text("que quede flipando chaval"),
         actions: [ElevatedButton(onPressed: ()
         {
           quizAnswered = true;
           Navigator.pop(context);
+          if (currentPage == widget.contenido.length - 1) 
+            {
+          finishLevel();
+            }
           }, 
           child: Text("anashiiii"))],
+      ),
       );
       },
       );
       } else {
-      showDialog(context: context, builder: (context) {
-      return AlertDialog(
+      showDialog(context: context,
+      barrierDismissible: false, 
+      builder: (context) {
+        return PopScope(
+        canPop:  false,
+        child: AlertDialog(
         title: Text("¡Incorrecto!"),
         content: Text("que queres queque? que mandas crack que mandas"),
         actions: [ElevatedButton(onPressed: ()
         {
           quizAnswered = true;
           Navigator.pop(context);
+          if (currentPage == widget.contenido.length - 1) 
+            {
+          finishLevel();
+            } 
           }, 
           child: Text("te voa a rapta"))],
-      );
+      ),
+        );
       },
       );}
           },

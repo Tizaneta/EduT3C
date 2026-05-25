@@ -1,5 +1,4 @@
 import 'package:edut3c/screens/profileScreen.dart';
-
 import 'NetScreen.dart';
 import 'SoftwareScreen.dart';
 import 'package:flutter/material.dart';
