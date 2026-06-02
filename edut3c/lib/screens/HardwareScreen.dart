@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'StationScreens.dart';
+import '../data/HardwareData.dart';
 
 class HardwareScreen extends StatelessWidget {
   @override
@@ -7,23 +9,61 @@ class HardwareScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("Hardware"),
       ),
-    body: SingleChildScrollView(
-      padding: EdgeInsets.all(16),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
+      body: 
+      ListView(
+        padding: EdgeInsets.all(20),
         children: [
-        Text("Niveles de microprocesador"),
-        SizedBox(height: 20),
-        Text("Niveles de GPU"),
-        SizedBox(height: 20),
-        Text("Niveles de fuente de alimentación"),
-        SizedBox(height: 20),
+        ElevatedButton(onPressed: (){
+          Navigator.push(context, 
+          MaterialPageRoute(builder: (context) => StationScreens(title: "Microprocesador", 
+          levels: 7,
+          levelsData: cpuLevels,
+          ),
+        ),
+        );
+        }, // Aca termina el boton y abajo esta el child
+        child: Text("Microprocesador"),
+        ),
+        SizedBox(height: 40),
 
+        ElevatedButton(onPressed: (){
+          Navigator.push(context,
+          MaterialPageRoute(builder: (context) => StationScreens(title: "GPU",
+          levels: 5, 
+          levelsData: gpuLevels,
+          )
+        ),
+        );
+        }, 
+        child: Text("GPU")),
+         SizedBox(height: 40),
+
+        ElevatedButton(onPressed: (){
+          Navigator.push(context, 
+          MaterialPageRoute(builder: (context) => StationScreens(title: "Discos SSD/HDD", 
+          levels: 5,
+          levelsData: ssdhddLevels,
+          )
+        
+        ),
+        );
+        }, child: Text("Dispositivos de almacenamiento")),
+        SizedBox(height: 40),
+
+        ElevatedButton(onPressed: (){Navigator.push(context,
+        MaterialPageRoute(builder:(context) => StationScreens(title: "cuantos botones queres", 
+        levels: 3,
+        levelsData: {},
+        ),
+        )
+        );
+        }, child: Text("any another device")),
+         SizedBox(height: 40),
+         
         ]
       )
-      
-    )
+    
+    
     );
   }
 }
