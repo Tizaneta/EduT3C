@@ -19,3 +19,10 @@ class Rank(db.Model):
         db.Integer,
         nullable=False
     )
+    
+def to_dict(self):
+    return {
+        "id": self.id,
+        "name": self.name,
+        "xp_required": self.xp_required
+    }

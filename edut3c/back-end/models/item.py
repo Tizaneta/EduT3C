@@ -18,3 +18,26 @@ class Item(db.Model):
         db.Integer,
         nullable=False
     )
+    
+    description = db.Column(
+        db.String(255),
+        nullable=False
+    )
+    
+    icon = db.Column(
+        db.String(255),
+        nullable=False
+    )
+
+    is_stackable = db.Column(
+        db.Boolean,
+        default=False
+    )
+
+    def to_dict(self):
+        return {
+        "id": self.id,
+        "name": self.name,
+        "description": self.description,
+        "price": self.price
+        }

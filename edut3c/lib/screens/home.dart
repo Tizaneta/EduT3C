@@ -4,6 +4,8 @@ import 'SoftwareScreen.dart';
 import 'package:flutter/material.dart';
 import 'HardwareScreen.dart';
 import 'SocialProfileScreen.dart';
+import 'hardware_map_screen.dart';
+
 class Home extends StatelessWidget{
 @override
   Widget build(BuildContext context){
@@ -15,6 +17,7 @@ class Home extends StatelessWidget{
         NetScreen(),
         Profilescreen(),
         SocialProfileScreen(),
+        HardwareMapScreen(),
       ],
     )
   );

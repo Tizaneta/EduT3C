@@ -23,3 +23,11 @@ class Level(db.Model):
         db.Integer,
         nullable=False,
     )
+    
+def to_dict(self):
+    return {
+        "id": self.id,
+        "name": self.name,
+        "xp_reward": self.xp_reward,
+        "bits_reward": self.bits_reward
+    }

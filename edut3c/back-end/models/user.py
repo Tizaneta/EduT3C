@@ -46,10 +46,31 @@ class User(db.Model):
         "bits": self.bits
         }
     
+    rank = db.relationship(
+        "Rank",
+        backref="users"
+    )
+    
     rank_id = db.Column(
         db.Integer,
         db.ForeignKey("ranks.id")
     )
+    
+    equipped_frame_id = db.Column(
+        db.Integer,
+        db.ForeignKey("item.id")
+    )
+
+    equipped_avatar_id = db.Column(
+        db.Integer,
+        db.ForeignKey("item.id")
+    )
+
+    equipped_title_id = db.Column(
+        db.Integer,
+        db.ForeignKey("item.id")
+    )
+    
 
     
     
