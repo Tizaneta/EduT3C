@@ -1,4 +1,3 @@
-import 'package:edut3c/screens/profileScreen.dart';
 import 'NetScreen.dart';
 import 'SoftwareScreen.dart';
 import 'SoftwareScreenP.dart';
@@ -19,7 +18,6 @@ class Home extends StatelessWidget{
         SoftwareScreenPP(),
         SoftwareScreen(),
         NetScreen(),
-        Profilescreen(),
         SocialProfileScreen(),
         HardwareMapScreen(),
       ],
