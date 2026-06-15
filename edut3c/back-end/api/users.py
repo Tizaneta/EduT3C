@@ -6,6 +6,8 @@ from models.user_item import UserItem
 from models.level import Level
 from models.user_level import UserLevel
 from models.friend import Friend
+from datetime import datetime, timedelta, timezone
+
 
 # Para migrar los modelos nuevos a la base de datos:
 # flask db migrate -m "X" (es como un git add .)
@@ -208,6 +210,17 @@ def get_inventory(id):
         for user_item in inventory
     ])
     
+# Endpoint para obtener todos los niveles del juego /GET
+    
+@levels_bp.route("/levels")
+def get_levels():
+    levels = Level.query.all()
+
+    return jsonify([
+        level.to_dict()
+        for level in levels
+    ])
+    
 # Endpoint importante para la relación de nivel completo entre jugador y nivel, decide si se entrega recompensa.
 
 @levels_bp.route("/levels/<int:id>/complete", methods=["POST"])
@@ -243,6 +256,21 @@ def complete_level(id):
     xp_reward = level.xp_reward
     bits_reward = level.bits_reward
 
+    
+
+# Si el boost sigue activo, multiplicamos la recompensa.
+
+    if (
+        user.xp_boost_until
+        and user.xp_boost_until > datetime.now()):
+        xp_reward *= user.xp_multiplier
+    else:
+        user.xp_multiplier = 1.0
+
+# Convertimos a entero por si el multiplicador es 1.5
+
+    xp_reward = int(xp_reward)
+    
     user.xp += xp_reward
     user.bits += bits_reward
 
@@ -364,6 +392,11 @@ def add_friend(id):
         return jsonify({
             "message": "Ya son amigos."
         }), 400
+        
+    if id == friend.id:
+        return jsonify({
+        "message": "No puedes agregarte a ti mismo."
+    }), 400
 
     new_friend = Friend(
         user_id=id,
@@ -413,6 +446,73 @@ def get_friends(id):
         for friend in friends
     ])
     
+# Endpoint para consumir boosts.
+
+@items_bp.route("/users/<int:id>/use-item", methods=["POST"])
+def use_item(id):
+
+    data = request.json
+
+    user = User.query.get(id)
+
+    item = Item.query.get(data["item_id"])
+
+    if not user or not item:
+        return jsonify({
+            "message": "Usuario u objeto no encontrado."
+        }), 404
+
+    inventory_item = UserItem.query.filter_by(
+        user_id=user.id,
+        item_id=item.id
+    ).first()
+
+    if not inventory_item:
+        return jsonify({
+            "message": "No tienes este objeto."
+        }), 400
+
+    if item.type != "boost":
+        return jsonify({
+            "message": "Este objeto no es consumible."
+        }), 400
+
+    # Asignamos el multiplicador según la poción.
+
+    if item.name == "Pocion XP x1.5":
+        user.xp_multiplier = 1.5
+
+    elif item.name == "Pocion XP x2":
+        user.xp_multiplier = 2.0
+
+    elif item.name == "Pocion XP x3":
+        user.xp_multiplier = 3.0
+
+    else:
+        return jsonify({
+            "message": "Potenciador desconocido."
+        }), 400
+
+    # Duración del boost: 15 minutos.
+    user.xp_boost_until = (
+        datetime.now()
+        + timedelta(minutes=15)
+    )
+
+    # Consumimos una unidad del objeto.
+    inventory_item.quantity -= 1
+
+    if inventory_item.quantity <= 0:
+        db.session.delete(inventory_item)
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "Potenciador utilizado.",
+        "multiplier": user.xp_multiplier,
+        "active_until": user.xp_boost_until.isoformat()
+    }), 200
+    
 # Endpoint para equipar objetos.
 
 @items_bp.route("/users/<int:id>/equip", methods=["POST"])
@@ -439,9 +539,19 @@ def equip_item(id):
             "message": "No tienes este objeto."
         }), 400
 
-    user.equipped_frame_id = item.id
-    user.equipped_avatar_id = item.id
-    user.equipped_title_id = item.id
+    if item.type == "frame":
+        user.equipped_frame_id = item.id
+
+    elif item.type == "avatar":
+        user.equipped_avatar_id = item.id
+
+    elif item.type == "title":
+        user.equipped_title_id = item.id
+
+    else:
+        return jsonify({
+        "message": "Este objeto no se puede equipar."
+    }), 400
 
     db.session.commit()
 

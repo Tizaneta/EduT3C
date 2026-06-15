@@ -43,7 +43,9 @@ class User(db.Model):
         "username": self.username,
         "email": self.email,
         "xp": self.xp,
-        "bits": self.bits
+        "bits": self.bits,
+        "xp_multiplier": self.xp_multiplier,
+        "xp_boost_until": self.xp_boost_until
         }
     
     rank = db.relationship(
@@ -69,6 +71,16 @@ class User(db.Model):
     equipped_title_id = db.Column(
         db.Integer,
         db.ForeignKey("item.id")
+    )
+    
+    xp_multiplier = db.Column(
+        db.Float,
+        default=1.0
+    )
+
+    xp_boost_until = db.Column(
+        db.DateTime,
+        nullable=True
     )
     
 

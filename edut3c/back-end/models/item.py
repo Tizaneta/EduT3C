@@ -34,10 +34,19 @@ class Item(db.Model):
         default=False
     )
 
+    type = db.Column(
+    db.String(50),
+    nullable=False
+    )
+    
     def to_dict(self):
         return {
         "id": self.id,
         "name": self.name,
         "description": self.description,
-        "price": self.price
+        "price": self.price,
+        "equipped_frame_id": self.equipped_frame_id,
+        "equipped_avatar_id": self.equipped_avatar_id,
+        "equipped_title_id": self.equipped_title_id
+
         }

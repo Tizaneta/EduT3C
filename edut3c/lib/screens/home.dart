@@ -1,10 +1,13 @@
 import 'package:edut3c/screens/profileScreen.dart';
 import 'NetScreen.dart';
 import 'SoftwareScreen.dart';
+import 'SoftwareScreenP.dart';
 import 'package:flutter/material.dart';
-import 'HardwareScreen.dart';
+//import 'HardwareScreen.dart';
 import 'SocialProfileScreen.dart';
 import 'hardware_map_screen.dart';
+import 'HardwareIntroScreen.dart';
+
 
 class Home extends StatelessWidget{
 @override
@@ -12,7 +15,8 @@ class Home extends StatelessWidget{
   return Scaffold(
     body: PageView(
       children: [
-        HardwareScreen(),
+        HardwareIntroScreen(),
+        SoftwareScreenPP(),
         SoftwareScreen(),
         NetScreen(),
         Profilescreen(),

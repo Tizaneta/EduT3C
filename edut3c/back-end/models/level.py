@@ -24,10 +24,10 @@ class Level(db.Model):
         nullable=False,
     )
     
-def to_dict(self):
-    return {
-        "id": self.id,
-        "name": self.name,
-        "xp_reward": self.xp_reward,
-        "bits_reward": self.bits_reward
-    }
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "xp_reward": self.xp_reward,
+            "bits_reward": self.bits_reward
+        }
