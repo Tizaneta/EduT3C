@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'Registerscreen.dart';
+import 'SignScreen.dart';
 import 'home.dart';
 
 // TODO: importá Home cuando tengas la autenticación lista
