@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 // ─────────────────────────────────────────────
 // DATOS DE EJEMPLO (simulan un usuario real)
 // ─────────────────────────────────────────────
