@@ -268,3 +268,16 @@ final ssdhddLevels = {
   },
 ],
 };
+
+// Relaciona el nombre del componente del mapa con el conjunto de niveles correspondiente.
+final hardwareComponents = {
+  "cpu": cpuLevels,
+  "gpu": gpuLevels,
+  "storage": ssdhddLevels,
+ /* "psu": psuLevels,
+  "ram": ramLevels,
+  "network": networkLevels,
+  "cooler": coolerLevels,
+  "m2": m2Levels,
+  "ram_module": ramLevels,*/
+};

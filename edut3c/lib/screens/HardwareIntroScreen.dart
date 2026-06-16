@@ -71,7 +71,7 @@ class _HardwareIntroScreenState extends State<HardwareIntroScreen>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => HardwareScreen(),
+        builder: (context) => HardwareMapScreen(),
       ),
     );
   }

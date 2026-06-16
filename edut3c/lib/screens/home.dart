@@ -2,10 +2,10 @@ import 'NetScreen.dart';
 import 'SoftwareScreen.dart';
 import 'SoftwareScreenP.dart';
 import 'package:flutter/material.dart';
-//import 'HardwareScreen.dart';
+import 'HardwareScreen.dart';
 import 'SocialProfileScreen.dart';
-import 'hardware_map_screen.dart';
 import 'HardwareIntroScreen.dart';
+import 'SettingsScreen.dart';
 
 
 class Home extends StatelessWidget{
@@ -19,7 +19,7 @@ class Home extends StatelessWidget{
         SoftwareScreen(),
         NetScreen(),
         SocialProfileScreen(),
-        HardwareMapScreen(),
+        SettingsScreen(),
       ],
     )
   );
