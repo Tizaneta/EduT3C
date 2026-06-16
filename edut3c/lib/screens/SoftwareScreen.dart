@@ -1,60 +1,120 @@
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 import 'StationScreens.dart';
 import '../data/SoftwareData.dart';
 
-class SoftwareScreen extends StatelessWidget {
+class SoftwareScreen extends StatefulWidget {
+  @override
+  State<SoftwareScreen> createState() => _SoftwareScreenState();
+}
+
+class _SoftwareScreenState extends State<SoftwareScreen> {
+  late VideoPlayerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.asset('assets/videos/sofware.mp4')
+      ..initialize().then((_) {
+        _controller.setLooping(true);
+        _controller.setVolume(0);
+        _controller.play();
+        setState(() {});
+      });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(title: Text("Software")),
       body: Stack(
         children: [
+          // Fondo: video en loop
           Positioned.fill(
-            child: Image.asset(
-              'assets/videos/capas de sofware.jpeg',
+            child: _controller.value.isInitialized
+                ? FittedBox(
               fit: BoxFit.cover,
-            ),
+              child: SizedBox(
+                width: _controller.value.size.width,
+                height: _controller.value.size.height,
+                child: VideoPlayer(_controller),
+              ),
+            )
+                : Container(color: Colors.black),
           ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildButton(context, "1  S.O", fundamentosLevels, "S.O"),
-                SizedBox(height: 28),
-                _buildButton(context, "2  Capas", direccionamientoLevels, "Capas"),
-                SizedBox(height: 28),
-                _buildButton(context, "3  Aplicaciones", infraestructuraLevels, "Aplicaciones"),
-                SizedBox(height: 28),
-                _buildButton(context, "4  Programación", administracionLevels, "Programación"),
-                SizedBox(height: 28),
-                _buildButton(context, "5  Programación avanzada", seguridadLevels, "Programación avanzada"),
-              ],
-            ),
-          ),
+
+          // 1 - S.O
+          _buildLayerButton(context,
+              left: screenWidth * 0.05,
+              top: screenHeight * 0.10,
+              width: screenWidth * 0.90,
+              height: screenHeight * 0.12,
+              data: fundamentosLevels,
+              title: "S.O"),
+
+          // 2 - Capas
+          _buildLayerButton(context,
+              left: screenWidth * 0.05,
+              top: screenHeight * 0.24,
+              width: screenWidth * 0.90,
+              height: screenHeight * 0.12,
+              data: direccionamientoLevels,
+              title: "Capas"),
+
+          // 3 - Aplicaciones
+          _buildLayerButton(context,
+              left: screenWidth * 0.05,
+              top: screenHeight * 0.38,
+              width: screenWidth * 0.90,
+              height: screenHeight * 0.12,
+              data: infraestructuraLevels,
+              title: "Aplicaciones"),
+
+          // 4 - Programación
+          _buildLayerButton(context,
+              left: screenWidth * 0.05,
+              top: screenHeight * 0.52,
+              width: screenWidth * 0.90,
+              height: screenHeight * 0.12,
+              data: administracionLevels,
+              title: "Programación"),
+
+          // 5 - Programación avanzada
+          _buildLayerButton(context,
+              left: screenWidth * 0.05,
+              top: screenHeight * 0.66,
+              width: screenWidth * 0.90,
+              height: screenHeight * 0.12,
+              data: seguridadLevels,
+              title: "Programación avanzada"),
         ],
       ),
     );
   }
 
-  Widget _buildButton(
-      BuildContext context,
-      String label,
-      Map<int, List<Map<String, dynamic>>> data,
-      String title,
-      ) {
-    return SizedBox(
-      width: 260,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black.withOpacity(0.55),
-          foregroundColor: Colors.cyanAccent,
-          side: BorderSide(color: Colors.cyanAccent, width: 1.5),
-          padding: EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        onPressed: () {
+  Widget _buildLayerButton(
+      BuildContext context, {
+        required double left,
+        required double top,
+        required double width,
+        required double height,
+        required Map<int, List<Map<String, dynamic>>> data,
+        required String title,
+      }) {
+    return Positioned(
+      left: left,
+      top: top,
+      child: GestureDetector(
+        onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -66,9 +126,13 @@ class SoftwareScreen extends StatelessWidget {
             ),
           );
         },
-        child: Text(
-          label,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        child: Container(
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       ),
     );

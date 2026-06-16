@@ -1,8 +1,8 @@
 final Map<int, List<Map<String, dynamic>>> fundamentosLevels = {
   1: [
     {
-      "type": "video",
-      "path": "assets/videos/test.mp4",
+      "type": "imagen",
+      "path": "assets/imagenes/capas de sofware",
     },
     {
       "type": "quiz",
@@ -17,8 +17,8 @@ final Map<int, List<Map<String, dynamic>>> fundamentosLevels = {
   ],
   2: [
     {
-      "type": "video",
-      "path": "assets/videos/test.mp4",
+      "type": "imagen",
+      "path": "assets/imagenes/capas de sofware",
     },
     {
       "type": "quiz",
@@ -33,8 +33,8 @@ final Map<int, List<Map<String, dynamic>>> fundamentosLevels = {
   ],
   3: [
     {
-      "type": "video",
-      "path": "assets/videos/test.mp4",
+      "type": "imagen",
+      "path": "assets/imagenes/capas de sofware",
     },
     {
       "type": "quiz",
@@ -52,8 +52,8 @@ final Map<int, List<Map<String, dynamic>>> fundamentosLevels = {
 final Map<int, List<Map<String, dynamic>>> direccionamientoLevels = {
   1: [
     {
-      "type": "video",
-      "path": "assets/videos/test.mp4",
+      "type": "imagen",
+      "path": "assets/imagenes/capas de sofware",
     },
     {
       "type": "quiz",
@@ -68,8 +68,8 @@ final Map<int, List<Map<String, dynamic>>> direccionamientoLevels = {
   ],
   2: [
     {
-      "type": "video",
-      "path": "assets/videos/test.mp4",
+      "type": "imagen",
+      "path": "assets/imagenes/capas de sofware",
     },
     {
       "type": "quiz",
@@ -84,8 +84,8 @@ final Map<int, List<Map<String, dynamic>>> direccionamientoLevels = {
   ],
   3: [
     {
-      "type": "video",
-      "path": "assets/videos/test.mp4",
+      "type": "imagen",
+      "path": "assets/imagenes/capas de sofware",
     },
     {
       "type": "quiz",
@@ -103,8 +103,8 @@ final Map<int, List<Map<String, dynamic>>> direccionamientoLevels = {
 final Map<int, List<Map<String, dynamic>>> infraestructuraLevels = {
   1: [
     {
-      "type": "video",
-      "path": "assets/videos/test.mp4",
+      "type": "imagen",
+      "path": "assets/imagenes/capas de sofware",
     },
     {
       "type": "quiz",
@@ -119,8 +119,8 @@ final Map<int, List<Map<String, dynamic>>> infraestructuraLevels = {
   ],
   2: [
     {
-      "type": "video",
-      "path": "assets/videos/test.mp4",
+      "type": "imagen",
+      "path": "assets/imagenes/capas de sofware",
     },
     {
       "type": "quiz",
@@ -135,8 +135,8 @@ final Map<int, List<Map<String, dynamic>>> infraestructuraLevels = {
   ],
   3: [
     {
-      "type": "video",
-      "path": "assets/videos/test.mp4",
+      "type": "imagen",
+      "path": "assets/imagenes/capas de sofware",
     },
     {
       "type": "quiz",
@@ -154,8 +154,8 @@ final Map<int, List<Map<String, dynamic>>> infraestructuraLevels = {
 final Map<int, List<Map<String, dynamic>>> administracionLevels = {
   1: [
     {
-      "type": "video",
-      "path": "assets/videos/test.mp4",
+      "type": "imagen",
+      "path": "assets/imagenes/capas de sofware",
     },
     {
       "type": "quiz",
@@ -170,8 +170,8 @@ final Map<int, List<Map<String, dynamic>>> administracionLevels = {
   ],
   2: [
     {
-      "type": "video",
-      "path": "assets/videos/test.mp4",
+      "type": "imagen",
+      "path": "assets/imagenes/capas de sofware",
     },
     {
       "type": "quiz",
@@ -186,8 +186,8 @@ final Map<int, List<Map<String, dynamic>>> administracionLevels = {
   ],
   3: [
     {
-      "type": "video",
-      "path": "assets/videos/test.mp4",
+      "type": "imagen",
+      "path": "assets/imagenes/capas de sofware",
     },
     {
       "type": "quiz",
@@ -205,8 +205,8 @@ final Map<int, List<Map<String, dynamic>>> administracionLevels = {
 final Map<int, List<Map<String, dynamic>>> seguridadLevels = {
   1: [
     {
-      "type": "video",
-      "path": "assets/videos/test.mp4",
+      "type": "imagen",
+      "path": "assets/imagenes/capas de sofware",
     },
     {
       "type": "quiz",
@@ -221,8 +221,8 @@ final Map<int, List<Map<String, dynamic>>> seguridadLevels = {
   ],
   2: [
     {
-      "type": "video",
-      "path": "assets/videos/test.mp4",
+      "type": "imagen",
+      "path": "assets/imagenes/capas de sofware",
     },
     {
       "type": "quiz",
@@ -237,8 +237,8 @@ final Map<int, List<Map<String, dynamic>>> seguridadLevels = {
   ],
   3: [
     {
-      "type": "video",
-      "path": "assets/videos/test.mp4",
+      "type": "imagen",
+      "path": "assets/imagenes/capas de sofware",
     },
     {
       "type": "quiz",
