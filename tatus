@@ -1,0 +1,25 @@
+[1mdiff --git a/edut3c/lib/main.dart b/edut3c/lib/main.dart[m
+[1mindex 05b5ef0..21de0e4 100644[m
+[1m--- a/edut3c/lib/main.dart[m
+[1m+++ b/edut3c/lib/main.dart[m
+[36m@@ -1,17 +1,15 @@[m
+ import 'package:flutter/material.dart';[m
+[31m-import 'screens/home.dart';[m
+ import 'screens/RegisterScreen.dart';[m
+[32m+[m[32mimport 'screens/home.dart';[m
+ void main() {[m
+   runApp(MyApp());[m
+ }[m
+ [m
+ class MyApp extends StatelessWidget {[m
+[31m-[m
+   @override[m
+   Widget build(BuildContext context) {[m
+     return MaterialApp([m
+[31m-      home: RegisterScreen(),);[m
+[32m+[m[32m      home: const RegisterScreen(),);[m
+ [m
+   }[m
+[31m-[m
+ }[m
+\ No newline at end of file[m
