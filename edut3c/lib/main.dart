@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'screens/Loginscreen.dart';
 
 void main() {
@@ -17,4 +17,22 @@ class MyApp extends StatelessWidget {
       home: const LoginScreen(),
     );
   }
+}*/
+
+import 'package:flutter/material.dart';
+import 'screens/home.dart';
+//import 'screens/Registerscreen.dart';
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+  home: Home(), // la app arranca acá
+    );
+  }
+
 }
