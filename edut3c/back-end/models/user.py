@@ -45,7 +45,10 @@ class User(db.Model):
         "xp": self.xp,
         "bits": self.bits,
         "xp_multiplier": self.xp_multiplier,
-        "xp_boost_until": self.xp_boost_until
+        "xp_boost_until": self.xp_boost_until,
+        "equipped_frame_id": self.equipped_frame_id,
+        "equipped_avatar_id": self.equipped_avatar_id,
+        "equipped_title_id": self.equipped_title_id
         }
     
     rank = db.relationship(

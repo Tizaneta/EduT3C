@@ -45,8 +45,4 @@ class Item(db.Model):
         "name": self.name,
         "description": self.description,
         "price": self.price,
-        "equipped_frame_id": self.equipped_frame_id,
-        "equipped_avatar_id": self.equipped_avatar_id,
-        "equipped_title_id": self.equipped_title_id
-
         }

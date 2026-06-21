@@ -304,6 +304,11 @@ def buy_item(id):
 
     data = request.json
 
+    if "item_id" not in data:
+        return jsonify({
+        "message": "Falta item_id."
+    }), 400
+    
     item = Item.query.get(data["item_id"])
     
 
@@ -455,6 +460,11 @@ def use_item(id):
 
     user = User.query.get(id)
 
+    if "item_id" not in data:
+        return jsonify({
+        "message": "Falta item_id."
+    }), 400
+    
     item = Item.query.get(data["item_id"])
 
     if not user or not item:
@@ -522,6 +532,11 @@ def equip_item(id):
 
     user = User.query.get(id)
 
+    if "item_id" not in data:
+        return jsonify({
+        "message": "Falta item_id."
+    }), 400
+    
     item = Item.query.get(data["item_id"])
 
     if not user or not item:
