@@ -1,6 +1,7 @@
-import 'package:edut3c/screens/home.dart';
+import 'package:edut3c/models/user.dart';
 import 'package:flutter/material.dart';
-import 'Loginscreen.dart';
+import 'package:edut3c/screens/Loginscreen.dart';
+import '../services/api_service.dart';
 // ─────────────────────────────────────────────
 //  RegisterScreen
 //  Pantalla de registro de nuevo usuario.
@@ -44,14 +45,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   // ── Lógica de registro ───────────────────────
   // Por ahora solo imprime los datos; reemplazá
   // este método con tu lógica de autenticación real.
-  void _handleRegister() {
+  void _handleRegister() async {
     final email    = _emailController.text.trim();
-    final name     = _nameController.text.trim();
+    final username     = _nameController.text.trim();
     final password = _passwordController.text;
     final confirm  = _confirmController.text;
 
     // Validación básica
-    if (email.isEmpty || name.isEmpty || password.isEmpty) {
+    if (email.isEmpty || username.isEmpty || password.isEmpty) {
       _showSnack('Por favor completá todos los campos.');
       return;
     }
@@ -62,10 +63,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (password.length < 8) {
       _showSnack('La contraseña debe tener al menos 8 caracteres.');
       return;
-    }
-
-    // TODO: conectar con tu backend / Firebase / etc.
-    _showSnack('¡Cuenta creada con éxito!');
+    } 
+    try {
+      debugPrint("1");
+      final result =
+        await ApiService.register(
+          username,
+          email,
+          password,
+        );
+      debugPrint("2");
+      if (!mounted) return;
+      debugPrint("3: pasó el mounted");
+      Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+      builder: (_) => const LoginScreen(),
+    ),
+  );   
+        debugPrint("Ya pasó el navigator.");
+        debugPrint(result.toString());
+      } catch (e, stackTrace) {
+        if (!mounted) return;
+        debugPrint("ERROR $e");
+        debugPrint(stackTrace.toString());
+        }
   }
 
   void _showSnack(String msg) {
@@ -531,10 +553,7 @@ class _BackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => Home()),
-      ),
+      onTap: () => Navigator.pop(context),
       child: Container(
         width: 42,
         height: 42,

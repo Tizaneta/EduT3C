@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'SignScreen.dart';
+import '../services/api_service.dart';
 import 'home.dart';
-
+import '../models/user.dart';
 // TODO: importá Home cuando tengas la autenticación lista
 // import 'home.dart';
 
@@ -25,36 +26,48 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
-  // ── Controladores de los campos de texto ─────
   final _emailController    = TextEditingController();
-  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-
-  // ── Controla si la contraseña es visible ─────
   bool _hidePassword = true;
 
   @override
   void dispose() {
-    // Siempre liberar los controladores al salir
     _emailController.dispose();
-    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  // ── Lógica de inicio de sesión ───────────────
-  // Reemplazá el contenido con tu autenticación real
-  // (Firebase Auth, tu API, etc.)
-  void _handleLogin() {
+  Future<void> _handleLogin() async {
     final email    = _emailController.text.trim();
-    final username = _usernameController.text.trim();
     final password = _passwordController.text;
-
-    if (email.isEmpty || username.isEmpty || password.isEmpty) {
-      _showSnack('Por favor completá todos los campos.');
-      return;
-    }
+      if (
+        email.isEmpty ||
+        password.isEmpty
+      ) {
+        _showSnack('Por favor completá todos los campos.');
+        return;
+      }
+      try {
+      final result =
+        await ApiService.login(
+          email,
+          password,
+        );
+      final user = User.fromJson(
+      result["user"],
+      );
+      if (!mounted) return;
+      Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+      builder: (_) => Home(user: user,),
+    ),
+  );
+        debugPrint(result.toString());
+      } catch (e) {
+        if (!mounted) return;
+        _showSnack(e.toString());
+        }
 
     // TODO: validar credenciales contra tu backend
     // Si el login es exitoso, navegá a Home así:
@@ -173,7 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2979FF).withOpacity(0.5),
+            color: const Color(0xFF2979FF).withValues(),
             blurRadius: 20,
             spreadRadius: 2,
           ),
@@ -205,12 +218,12 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF0D1F38).withOpacity(0.9),
+        color: const Color(0xFF0D1F38).withValues(),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.white12),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2979FF).withOpacity(0.08),
+            color: const Color(0xFF2979FF).withValues(),
             blurRadius: 24,
             spreadRadius: 2,
           ),
@@ -261,16 +274,6 @@ class _LoginScreenState extends State<LoginScreen> {
             hint: 'ejemplo@correo.com',
             icon: Icons.mail_outline,
             keyboardType: TextInputType.emailAddress,
-          ),
-
-          const SizedBox(height: 16),
-
-          // ── Campo: Nombre de usuario ──────────
-          _buildField(
-            controller: _usernameController,
-            label: 'Nombre de usuario',
-            hint: 'Tu nombre de usuario',
-            icon: Icons.person_outline,
           ),
 
           const SizedBox(height: 16),
@@ -330,7 +333,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 elevation: 8,
-                shadowColor: const Color(0xFF2979FF).withOpacity(0.5),
+                shadowColor: const Color(0xFF2979FF).withValues(alpha: 0.5),
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -437,7 +440,7 @@ class _LoginScreenState extends State<LoginScreen> {
             decoration: BoxDecoration(
               border: Border(
                 right: BorderSide(
-                  color: const Color(0xFF2979FF).withOpacity(0.3),
+                  color: const Color(0xFF2979FF).withValues(),
                 ),
               ),
             ),
@@ -501,7 +504,7 @@ class _CircuitPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final linePaint = Paint()
-      ..color = const Color(0xFF1A3A5C).withOpacity(0.3)
+      ..color = const Color(0xFF1A3A5C).withValues()
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
 
@@ -531,7 +534,7 @@ class _CircuitPainter extends CustomPainter {
 
     // Nodos (puntos donde se cruzan las trazas)
     final dotPaint = Paint()
-      ..color = const Color(0xFF2979FF).withOpacity(0.5)
+      ..color = const Color(0xFF2979FF).withValues()
       ..style = PaintingStyle.fill;
 
     final dots = [

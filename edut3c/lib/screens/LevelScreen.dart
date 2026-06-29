@@ -327,7 +327,7 @@ class _LevelScreenState extends State<LevelScreen> {
               style: TextStyle(color: isCorrect ? Colors.greenAccent : Colors.redAccent, fontWeight: FontWeight.bold)
             ),
             content: Text(
-              isCorrect ? "que quede flipando chaval" : "que queres queque? que mandas crack que mandas",
+              isCorrect ? "¡Lo has hecho genial!" : "¡Estuviste bastante cerca, hay que seguir practicando!",
               style: const TextStyle(color: Colors.white),
             ),
             actions: [
@@ -340,7 +340,7 @@ class _LevelScreenState extends State<LevelScreen> {
                     finishLevel();
                   }
                 }, 
-                child: Text(isCorrect ? "anashiiii" : "te voa a rapta", style: const TextStyle(color: Colors.black)),
+                child: Text(isCorrect ? "Aceptar" : "Aceptar", style: const TextStyle(color: Colors.black)),
               )
             ],
           ),

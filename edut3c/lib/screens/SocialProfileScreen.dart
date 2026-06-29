@@ -1,22 +1,13 @@
+import 'package:edut3c/models/user.dart';
 import 'package:flutter/material.dart';
-
-
+import 'Loginscreen.dart';
+import 'SignScreen.dart';
+import '../services/api_service.dart';
+import '../models/user.dart';
 // ─────────────────────────────────────────────
 // DATOS DE EJEMPLO (simulan un usuario real)
 // ─────────────────────────────────────────────
-final Map<String, dynamic> _mockUser = {
-  'username': '@techmaster',
-  'displayName': 'TechMaster',
-  'initials': 'TM',
-  'bio': 'Apasionado por el hardware y la tecnología. Armando PCs desde 2018.',
-  'joinDate': 'Miembro desde Enero 2023',
-  'level': 12,
-  'xpCurrent': 6200,
-  'xpNext': 10000,
-  'bits': 1340,
-  'coursesCompleted': 8,
-  'studyHours': 47,
-};
+
 
 final List<Map<String, dynamic>> _mockAchievements = [
   {'icon': Icons.construction, 'label': 'Constructor\nNovato'},
@@ -55,7 +46,8 @@ const Color _xpBarBg = Color(0xFF1E2A3A);
 // PANTALLA PRINCIPAL DE PERFIL SOCIAL
 // ─────────────────────────────────────────────
 class SocialProfileScreen extends StatelessWidget {
-  const SocialProfileScreen({super.key});
+  final User user;
+  const SocialProfileScreen({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -69,15 +61,15 @@ class SocialProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ── Sección: Avatar + Info básica del usuario ──
-            _UserHeaderCard(),
+            _UserHeaderCard(user: user,),
             const SizedBox(height: 14),
 
             // ── Sección: Clasificación / Nivel y XP ──
-            _ClassificationCard(),
+            _ClassificationCard(user: user,),
             const SizedBox(height: 14),
 
             // ── Sección: Estadísticas (Bits, cursos, horas) ──
-            _StatsRow(),
+            _StatsRow(user: user,),
             const SizedBox(height: 14),
 
             // ── Sección: Logros en cuadrícula ──
@@ -122,7 +114,7 @@ class SocialProfileScreen extends StatelessWidget {
       ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(40),
-        child: _ProfileTabBar(),
+        child: _ProfileTabBar(user: user),
       ),
     );
   }
@@ -132,6 +124,10 @@ class SocialProfileScreen extends StatelessWidget {
 // TAB BAR: Perfil / Mis Amigos
 // ─────────────────────────────────────────────
 class _ProfileTabBar extends StatefulWidget {
+    final User user;
+    const _ProfileTabBar({
+    required this.user,
+  });
   @override
   State<_ProfileTabBar> createState() => _ProfileTabBarState();
 }
@@ -180,6 +176,10 @@ class _ProfileTabBarState extends State<_ProfileTabBar> {
 // TARJETA: Avatar + nombre + bio + fecha
 // ─────────────────────────────────────────────
 class _UserHeaderCard extends StatelessWidget {
+    final User user;
+    const _UserHeaderCard({
+    required this.user,
+  });
   @override
   Widget build(BuildContext context) {
     return _Card(
@@ -188,7 +188,7 @@ class _UserHeaderCard extends StatelessWidget {
         children: [
           // Avatar circular con iniciales
           _UserAvatar(
-            initials: _mockUser['initials'],
+            initials: user.username,
             size: 56,
           ),
           const SizedBox(width: 14),
@@ -200,7 +200,7 @@ class _UserHeaderCard extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      _mockUser['displayName'],
+                      user.username,
                       style: const TextStyle(
                         color: _textPrimary,
                         fontWeight: FontWeight.bold,
@@ -213,7 +213,7 @@ class _UserHeaderCard extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  _mockUser['username'],
+                  user.username,
                   style: const TextStyle(color: _textSecondary, fontSize: 13),
                 ),
                 const SizedBox(height: 6),
@@ -226,7 +226,7 @@ class _UserHeaderCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    'Nivel ${_mockUser['level']}',
+                    'Nivel ${user.level}',
                     style: const TextStyle(
                       color: _accentBlue,
                       fontSize: 12,
@@ -237,7 +237,7 @@ class _UserHeaderCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 // Bio
                 Text(
-                  _mockUser['bio'],
+                  user.username,
                   style: const TextStyle(
                     color: _textSecondary,
                     fontSize: 12,
@@ -246,7 +246,7 @@ class _UserHeaderCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  _mockUser['joinDate'],
+                  user.username,
                   style: const TextStyle(
                     color: _textSecondary,
                     fontSize: 11,
@@ -265,13 +265,17 @@ class _UserHeaderCard extends StatelessWidget {
 // TARJETA: Clasificación – nivel + barra XP
 // ─────────────────────────────────────────────
 class _ClassificationCard extends StatelessWidget {
+    final User user;
+    const _ClassificationCard({
+    required this.user,
+  });
   @override
   Widget build(BuildContext context) {
-    final int xpCurrent = _mockUser['xpCurrent'];
-    final int xpNext = _mockUser['xpNext'];
-    final double progress = xpCurrent / xpNext;
-    final int xpRemaining = xpNext - xpCurrent;
-    final int nextLevel = _mockUser['level'] + 1;
+    final int xpCurrent = user.xp;
+    //final int xpNext = user.xpNext;
+    //final double progress = xpCurrent / xpNext;
+    //final int xpRemaining = xpNext - xpCurrent;
+    final int nextLevel = user.level + 1;
 
     return _Card(
       child: Column(
@@ -294,7 +298,7 @@ class _ClassificationCard extends StatelessWidget {
               const Text('Nivel actual',
                   style: TextStyle(color: _textSecondary, fontSize: 13)),
               Text(
-                'Nivel ${_mockUser['level']}',
+                'Nivel ${user.username}',
                 style: const TextStyle(
                   color: _accentBlue,
                   fontWeight: FontWeight.bold,
@@ -311,7 +315,8 @@ class _ClassificationCard extends StatelessWidget {
               const Text('XP',
                   style: TextStyle(color: _textSecondary, fontSize: 12)),
               Text(
-                '${_formatNum(xpCurrent)} / ${_formatNum(xpNext)}',
+                //'${_formatNum(xpCurrent)} / ${_formatNum(xpNext)}',
+                "Proximamente...",
                 style: const TextStyle(
                   color: _accentBlue,
                   fontSize: 12,
@@ -321,11 +326,11 @@ class _ClassificationCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          // Barra de progreso XP
-          _XpBar(progress: progress),
+          //_XpBar(progress: progress),
           const SizedBox(height: 6),
           Text(
-            '${_formatNum(xpRemaining)} XP para el Nivel $nextLevel',
+            //'${_formatNum(xpRemaining)} XP para el Nivel $nextLevel',
+            'Proximamente...',
             style: const TextStyle(color: _textSecondary, fontSize: 11),
           ),
         ],
@@ -343,6 +348,10 @@ class _ClassificationCard extends StatelessWidget {
 // FILA DE ESTADÍSTICAS: Bits – Cursos – Horas
 // ─────────────────────────────────────────────
 class _StatsRow extends StatelessWidget {
+    final User user;
+    const _StatsRow({
+    required this.user,
+  });
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -353,7 +362,7 @@ class _StatsRow extends StatelessWidget {
           child: _StatBigCard(
             icon: Icons.toll_rounded,
             label: 'Mis Bits',
-            value: '${_mockUser['bits']}',
+            value: user.username,
           ),
         ),
         const SizedBox(width: 10),
@@ -365,14 +374,14 @@ class _StatsRow extends StatelessWidget {
               _StatSmallCard(
                 icon: Icons.school_outlined,
                 label: 'Cursos',
-                value: '${_mockUser['coursesCompleted']}',
+                value: '${user.level}',
                 color: _accentBlue,
               ),
               const SizedBox(height: 10),
               _StatSmallCard(
                 icon: Icons.timer_outlined,
                 label: 'Horas',
-                value: '${_mockUser['studyHours']}h',
+                value: '${user.username}h',
                 color: _accentGold,
               ),
             ],

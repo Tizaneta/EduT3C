@@ -31,6 +31,11 @@ class User(db.Model):
         default=0,
     )
     
+    level = db.Column(
+        db.Integer,
+        default=1,
+    )
+    
     bits = db.Column(
         db.Integer,
         default=0,
@@ -43,6 +48,7 @@ class User(db.Model):
         "username": self.username,
         "email": self.email,
         "xp": self.xp,
+        "level": self.level,
         "bits": self.bits,
         "xp_multiplier": self.xp_multiplier,
         "xp_boost_until": self.xp_boost_until,

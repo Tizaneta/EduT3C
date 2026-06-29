@@ -355,6 +355,8 @@ def login():
 
     data = request.json
 
+    print(data)
+
     user = User.query.filter_by(
         email=data["email"]
     ).first()
