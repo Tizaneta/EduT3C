@@ -2,7 +2,7 @@ final cpuLevels = {
             1: [
               {
             "type": "video",
-            "path": "assets/videos/test.mp4",
+            "path": "assets/videos/test_video2.mp4",
             },
             {
             "type": "quiz",
@@ -16,7 +16,7 @@ final cpuLevels = {
             },
             {
             "type": "video",
-            "path": "assets/videos/test.mp4",
+            "path": "assets/videos/test_video2.mp4",
             },
             {
             "type": "quiz",
@@ -30,7 +30,7 @@ final cpuLevels = {
             },
             {
             "type": "video",
-            "path": "assets/videos/test.mp4",
+            "path": "assets/videos/test_video2.mp4",
             },
             {
             "type": "quiz",
@@ -46,7 +46,7 @@ final cpuLevels = {
             2: [
             {
             "type": "video",
-            "path": "assets/videos/test.mp4",
+            "path": "assets/videos/test_video2.mp4",
             },
             {
             "type": "quiz",
@@ -61,7 +61,7 @@ final cpuLevels = {
             3: [
             {
             "type": "video",
-            "path": "assets/videos/test.mp4",
+            "path": "assets/videos/test_video2.mp4",
             },
             {
             "type": "quiz",
@@ -267,4 +267,17 @@ final ssdhddLevels = {
     ],
   },
 ],
+};
+
+// Relaciona el nombre del componente del mapa con el conjunto de niveles correspondiente.
+final hardwareComponents = {
+  "cpu": cpuLevels,
+  "gpu": gpuLevels,
+  "storage": ssdhddLevels,
+ /* "psu": psuLevels,
+  "ram": ramLevels,
+  "network": networkLevels,
+  "cooler": coolerLevels,
+  "m2": m2Levels,
+  "ram_module": ramLevels,*/
 };

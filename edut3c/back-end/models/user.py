@@ -31,6 +31,11 @@ class User(db.Model):
         default=0,
     )
     
+    level = db.Column(
+        db.Integer,
+        default=1,
+    )
+    
     bits = db.Column(
         db.Integer,
         default=0,
@@ -43,13 +48,50 @@ class User(db.Model):
         "username": self.username,
         "email": self.email,
         "xp": self.xp,
-        "bits": self.bits
+        "level": self.level,
+        "bits": self.bits,
+        "xp_multiplier": self.xp_multiplier,
+        "xp_boost_until": self.xp_boost_until,
+        "equipped_frame_id": self.equipped_frame_id,
+        "equipped_avatar_id": self.equipped_avatar_id,
+        "equipped_title_id": self.equipped_title_id
         }
+    
+    rank = db.relationship(
+        "Rank",
+        backref="users"
+    )
     
     rank_id = db.Column(
         db.Integer,
         db.ForeignKey("ranks.id")
     )
+    
+    equipped_frame_id = db.Column(
+        db.Integer,
+        db.ForeignKey("item.id")
+    )
+
+    equipped_avatar_id = db.Column(
+        db.Integer,
+        db.ForeignKey("item.id")
+    )
+
+    equipped_title_id = db.Column(
+        db.Integer,
+        db.ForeignKey("item.id")
+    )
+    
+    xp_multiplier = db.Column(
+        db.Float,
+        default=1.0
+    )
+
+    xp_boost_until = db.Column(
+        db.DateTime,
+        nullable=True
+    )
+    
 
     
     

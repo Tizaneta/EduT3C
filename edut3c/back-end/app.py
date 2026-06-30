@@ -2,7 +2,8 @@ from flask import Flask
 from flask_cors import CORS
 from db.database import db
 from config.config import Config
-from api.users import users_bp
+from api.users import users_bp, items_bp, levels_bp
+from flask_migrate import Migrate
 
 #imports de la base de datos
 from models.user import User
@@ -23,6 +24,14 @@ db.init_app(app)
 
 app.register_blueprint(users_bp)
 
+app.register_blueprint(items_bp)
+
+app.register_blueprint(levels_bp)
+
+migrate = Migrate(
+    app,
+    db
+)
 
 @app.route("/")
 def home():
@@ -35,5 +44,9 @@ with app.app_context():
     
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=True
+        )
 

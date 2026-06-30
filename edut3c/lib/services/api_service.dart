@@ -1,0 +1,60 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+class ApiService {
+
+  static const String baseUrl =
+      "http://192.168.1.36:5000";
+
+  static Future<Map<String, dynamic>> login(
+  String email,
+  String password,
+) async {
+
+  final response = await http.post(
+    Uri.parse("$baseUrl/login"),
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: jsonEncode({
+      "email": email,
+      "password": password,
+    }),
+  );
+  final data = jsonDecode(response.body);
+
+if (response.statusCode == 200) {
+  return data;
+}
+  throw Exception(data["message"]);
+
+}
+static Future<Map<String, dynamic>> register(
+  String username,
+  String email,
+  String password,
+) async {
+
+  final response = await http.post(
+    Uri.parse("$baseUrl/users"),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: jsonEncode({
+      "username": username,
+      "email": email,
+      "password": password,
+    }),
+  );
+
+  final data = jsonDecode(response.body);
+
+  if (response.statusCode >= 200 && response.statusCode < 300) {
+    return data;
+  }
+
+  throw Exception(data["message"]);
+}
+}
+
+

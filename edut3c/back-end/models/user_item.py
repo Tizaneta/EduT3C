@@ -20,3 +20,18 @@ class UserItem(db.Model):
         db.ForeignKey("item.id"),
         nullable=False
     )
+    
+    quantity = db.Column(
+    db.Integer,
+    default=1
+    )
+    
+    user = db.relationship(
+        "User",
+        backref="inventory"
+    )
+
+    item = db.relationship(
+        "Item",
+        backref="owners"
+    )

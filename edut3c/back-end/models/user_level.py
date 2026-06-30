@@ -25,3 +25,13 @@ class UserLevel(db.Model):
         db.Boolean,
         default=False
     )
+    
+    user = db.relationship(
+    "User",
+    backref="completed_levels"
+    )
+
+    level = db.relationship(
+    "Level",
+    backref="players"
+    )
