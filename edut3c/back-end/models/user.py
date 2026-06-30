@@ -36,6 +36,16 @@ class User(db.Model):
         default=0,
     )
     
+    def to_dict(self):
+
+        return {
+        "id": self.id,
+        "username": self.username,
+        "email": self.email,
+        "xp": self.xp,
+        "bits": self.bits
+        }
+    
     rank_id = db.Column(
         db.Integer,
         db.ForeignKey("ranks.id")
