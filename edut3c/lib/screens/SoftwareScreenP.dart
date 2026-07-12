@@ -127,38 +127,21 @@ class SoftwareScreenPP extends StatelessWidget {
     );
   }
 
-  // ── AppBar personalizado ─────────────────────
+  // ── AppBar personalizado (sin menú ni info: esta pantalla es
+  // una página del PageView de home.dart, no tiene pantalla
+  // anterior a la que volver) ─────────────────────
   Widget _buildAppBar(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
-          // Botón de menú (hamburguesa)
-          IconButton(
-            icon: const Icon(Icons.menu, color: Colors.white70),
-            onPressed: () {},
-          ),
-
-          // Título centrado
-          const Expanded(
-            child: Text(
-              'Software',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ),
-
-          // Botón de info
-          IconButton(
-            icon: const Icon(Icons.info_outline, color: Colors.white70),
-            onPressed: () {},
-          ),
-        ],
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Text(
+        'Software',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.5,
+        ),
       ),
     );
   }
@@ -220,10 +203,6 @@ class SoftwareScreenPP extends StatelessWidget {
               ],
             ),
           ),
-
-          // Flecha
-          const Icon(Icons.chevron_right,
-              color: Color(0xFF4FC3F7), size: 24),
         ],
       ),
     );
@@ -258,21 +237,21 @@ class _TopicCard extends StatelessWidget {
       onTap: isLocked
           ? null // Sin acción si está bloqueado
           : () {
-              // Navega a StationScreens pasando datos del tema
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => StationScreens(
-                    title: label,
-                    levels: levels,
-                    // levelsData vacío: reemplazá con los datos reales
-                    levelsData: {
-                      for (int i = 1; i <= levels; i++) i: []
-                    },
-                  ),
-                ),
-              );
-            },
+        // Navega a StationScreens pasando datos del tema
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => StationScreens(
+              title: label,
+              levels: levels,
+              // levelsData vacío: reemplazá con los datos reales
+              levelsData: {
+                for (int i = 1; i <= levels; i++) i: []
+              },
+            ),
+          ),
+        );
+      },
       child: Padding(
         padding: const EdgeInsets.only(bottom: 14),
 

@@ -3,17 +3,25 @@ import 'package:flutter/material.dart';
 import '../widgets/video_block.dart';
 import 'package:flutter/rendering.dart';
 import '../widgets/nobackscroll.dart';
+import '../services/progress_service.dart';
 
 class LevelScreen extends StatefulWidget {
   final int levelNumber;
   final List<Map<String, dynamic>> contenido;
 
+  // Identificador del componente al que pertenece este nivel (ej: "cpu").
+  // Si es null, el nivel se completa igual (se muestra el diálogo de
+  // "Nivel completado") pero no se guarda progreso en ningún lado —
+  // es el caso de NetScreen/SoftwareScreen, que todavía no usan este sistema.
+  final String? componentKey;
+
   const LevelScreen({
     super.key,
     required this.levelNumber,
-    required this.contenido
+    required this.contenido,
+    this.componentKey,
   });
-  
+
   @override
   State<LevelScreen> createState() => _LevelScreenState();
 }
@@ -31,7 +39,7 @@ class _LevelScreenState extends State<LevelScreen> {
     timeLeft = 7;
     timer = Timer.periodic(
       const Duration(seconds: 1),
-      (timer) {
+          (timer) {
         setState(() {
           timeLeft--;
           if (timeLeft <= 0) {
@@ -40,33 +48,33 @@ class _LevelScreenState extends State<LevelScreen> {
             canScroll = true;
             quizAnswered = true;
             showDialog(
-              context: context, 
-              barrierDismissible: false,
-              builder: (context) {
-                return PopScope(
-                  canPop: false,
-                  child: AlertDialog(
-                    backgroundColor: const Color(0xFF0D1B2A),
-                    title: const Text("You've run out of time partner!", style: TextStyle(color: Colors.white)),
-                    content: Text(
-                      "The correct answer was just like ${widget.contenido[currentPage]["correctAnswer"]}",
-                      style: const TextStyle(color: Colors.grey),
+                context: context,
+                barrierDismissible: false,
+                builder: (context) {
+                  return PopScope(
+                    canPop: false,
+                    child: AlertDialog(
+                      backgroundColor: const Color(0xFF0D1B2A),
+                      title: const Text("You've run out of time partner!", style: TextStyle(color: Colors.white)),
+                      content: Text(
+                        "The correct answer was just like ${widget.contenido[currentPage]["correctAnswer"]}",
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                      actions: [
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.cyan),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            if (currentPage == widget.contenido.length - 1) {
+                              finishLevel();
+                            }
+                          },
+                          label: const Text("Holy shii", style: TextStyle(color: Colors.black)),
+                        )
+                      ],
                     ),
-                    actions: [
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.cyan),
-                        onPressed: () {
-                          Navigator.pop(context);
-                          if (currentPage == widget.contenido.length - 1) {
-                            finishLevel();
-                          }
-                        }, 
-                        label: const Text("Holy shii", style: TextStyle(color: Colors.black)),
-                      )
-                    ],
-                  ),
-                );
-              }
+                  );
+                }
             );
           }
         });
@@ -75,6 +83,11 @@ class _LevelScreenState extends State<LevelScreen> {
   }
 
   void finishLevel() {
+    // Guardamos el progreso (nivel más alto completado) para que
+    // StationScreens y HardwareScreen sepan qué desbloquear.
+    if (widget.componentKey != null) {
+      ProgressService.completeLevel(widget.componentKey!, widget.levelNumber);
+    }
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -87,11 +100,11 @@ class _LevelScreenState extends State<LevelScreen> {
             content: const Text("Ganaste 120 XP y 45 bits", style: TextStyle(color: Colors.white)),
             actions: [
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.cyan),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text("Volver", style: TextStyle(color: Colors.black))
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.cyan),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Volver", style: TextStyle(color: Colors.black))
               )
             ],
           ),
@@ -104,16 +117,16 @@ class _LevelScreenState extends State<LevelScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       // Hacemos el AppBar transparente para que no corte el fondo tecnológico
-      extendBodyBehindAppBar: true, 
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(
-          "Nivel ${widget.levelNumber}", 
-          style: const TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold, letterSpacing: 1.5)
+            "Nivel ${widget.levelNumber}",
+            style: const TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold, letterSpacing: 1.5)
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.cyan),
-      ), 
+      ),
       body: PageView.builder(
         onPageChanged: (index) {
           pageController.jumpToPage(index);
@@ -146,7 +159,7 @@ class _LevelScreenState extends State<LevelScreen> {
                 });
               },
             );
-          } else { 
+          } else {
             // Lista de letras para las opciones (A, B, C, D...)
             List<String> letters = ["A", "B", "C", "D", "E"];
 
@@ -189,15 +202,15 @@ class _LevelScreenState extends State<LevelScreen> {
                               Text(
                                 "$timeLeft",
                                 style: TextStyle(
-                                  fontSize: 26, 
-                                  fontWeight: FontWeight.bold, 
-                                  color: timeLeft <= 3 ? Colors.redAccent : Colors.white
+                                    fontSize: 26,
+                                    fontWeight: FontWeight.bold,
+                                    color: timeLeft <= 3 ? Colors.redAccent : Colors.white
                                 ),
                               ),
                             ],
                           ),
                           const SizedBox(height: 40),
-                          
+
                           // Tarjeta contenedora de la pregunta
                           Container(
                             padding: const EdgeInsets.all(20),
@@ -230,27 +243,27 @@ class _LevelScreenState extends State<LevelScreen> {
                                 onTap: quizAnswered
                                     ? null
                                     : () {
-                                        setState(() {
-                                          quizAnswered = true;
-                                          timer?.cancel();
-                                          timeLeft = 7;
-                                          canScroll = true;
-                                        });
-                                        final correctAnswer = widget.contenido[index]["correctAnswer"];
-                                        
-                                        _showResultDialog(option == correctAnswer, correctAnswer);
-                                      },
+                                  setState(() {
+                                    quizAnswered = true;
+                                    timer?.cancel();
+                                    timeLeft = 7;
+                                    canScroll = true;
+                                  });
+                                  final correctAnswer = widget.contenido[index]["correctAnswer"];
+
+                                  _showResultDialog(option == correctAnswer, correctAnswer);
+                                },
                                 child: Container(
                                   width: double.infinity,
                                   padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                                   decoration: BoxDecoration(
                                     // Fondo oscuro semitransparente como la imagen B/C/D
-                                    color: const Color(0xFF09101A).withOpacity(0.85), 
+                                    color: const Color(0xFF09101A).withOpacity(0.85),
                                     borderRadius: BorderRadius.circular(12),
                                     // Borde con brillo neón azul/cyan
                                     border: Border.all(
-                                      color: Colors.cyan.withOpacity(0.6), 
-                                      width: 2
+                                        color: Colors.cyan.withOpacity(0.6),
+                                        width: 2
                                     ),
                                     boxShadow: [
                                       BoxShadow(
@@ -275,9 +288,9 @@ class _LevelScreenState extends State<LevelScreen> {
                                         child: Text(
                                           letter,
                                           style: const TextStyle(
-                                            color: Colors.cyan,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16
+                                              color: Colors.cyan,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16
                                           ),
                                         ),
                                       ),
@@ -287,9 +300,9 @@ class _LevelScreenState extends State<LevelScreen> {
                                         child: Text(
                                           option,
                                           style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500
                                           ),
                                         ),
                                       ),
@@ -315,7 +328,7 @@ class _LevelScreenState extends State<LevelScreen> {
   // Refactorizado para limpiar código del builder principal
   void _showResultDialog(bool isCorrect, String correctAnswer) {
     showDialog(
-      context: context, 
+      context: context,
       barrierDismissible: false,
       builder: (context) {
         return PopScope(
@@ -323,8 +336,8 @@ class _LevelScreenState extends State<LevelScreen> {
           child: AlertDialog(
             backgroundColor: const Color(0xFF0D1B2A),
             title: Text(
-              isCorrect ? "¡Correcto!" : "¡Incorrecto!", 
-              style: TextStyle(color: isCorrect ? Colors.greenAccent : Colors.redAccent, fontWeight: FontWeight.bold)
+                isCorrect ? "¡Correcto!" : "¡Incorrecto!",
+                style: TextStyle(color: isCorrect ? Colors.greenAccent : Colors.redAccent, fontWeight: FontWeight.bold)
             ),
             content: Text(
               isCorrect ? "¡Lo has hecho genial!" : "¡Estuviste bastante cerca, hay que seguir practicando!",
@@ -339,7 +352,7 @@ class _LevelScreenState extends State<LevelScreen> {
                   if (currentPage == widget.contenido.length - 1) {
                     finishLevel();
                   }
-                }, 
+                },
                 child: Text(isCorrect ? "Aceptar" : "Aceptar", style: const TextStyle(color: Colors.black)),
               )
             ],

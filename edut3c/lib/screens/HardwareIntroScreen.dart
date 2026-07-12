@@ -89,30 +89,9 @@ class _HardwareIntroScreenState extends State<HardwareIntroScreen>
           child: Column(
             children: [
 
-              // ── AppBar manual (hamburger + info) ───────────────
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Menú hamburger — conectá tu drawer si lo tenés
-                    IconButton(
-                      icon: const Icon(Icons.menu, color: Colors.white),
-                      onPressed: () {
-                        // TODO: abrir Drawer / menú lateral
-                      },
-                    ),
-                    // Botón de info — podés navegar a una pantalla de ayuda
-                    IconButton(
-                      icon: const Icon(Icons.info_outline, color: Colors.white),
-                      onPressed: () {
-                        // TODO: navegar a pantalla de información
-                      },
-                    ),
-                  ],
-                ),
-              ),
-
+              // (Se sacó el AppBar manual con menú/info: esta pantalla
+              // es una página del PageView de home.dart, no tiene una
+              // pantalla anterior a la que volver.)
               const SizedBox(height: 8),
 
               // ── Título con efecto neón ──────────────────────────
@@ -326,7 +305,7 @@ class _HardwareIntroScreenState extends State<HardwareIntroScreen>
                             SizedBox(height: 4),
                             Text(
                               'El hardware corresponde a todos los componentes físicos '
-                              'que puedes ver y tocar en una computadora.',
+                                  'que puedes ver y tocar en una computadora.',
                               style: TextStyle(
                                 color: Colors.white70,
                                 fontSize: 13,

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:edut3c/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:edut3c/screens/Loginscreen.dart';
@@ -63,31 +64,51 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (password.length < 8) {
       _showSnack('La contraseña debe tener al menos 8 caracteres.');
       return;
-    } 
+    }
+
+    // ── MODO MOCK: bypass temporal sin backend ──────────
+    // Ver ApiService.mockMode para desactivarlo.
+    if (ApiService.mockMode) {
+      _showSnack('Registro simulado (modo mock activo).');
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const LoginScreen(),
+        ),
+      );
+      return;
+    }
+
     try {
       debugPrint("1");
       final result =
-        await ApiService.register(
-          username,
-          email,
-          password,
-        );
+      await ApiService.register(
+        username,
+        email,
+        password,
+      );
       debugPrint("2");
       if (!mounted) return;
       debugPrint("3: pasó el mounted");
       Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-      builder: (_) => const LoginScreen(),
-    ),
-  );   
-        debugPrint("Ya pasó el navigator.");
-        debugPrint(result.toString());
-      } catch (e, stackTrace) {
-        if (!mounted) return;
-        debugPrint("ERROR $e");
-        debugPrint(stackTrace.toString());
-        }
+        context,
+        MaterialPageRoute(
+          builder: (_) => const LoginScreen(),
+        ),
+      );
+      debugPrint("Ya pasó el navigator.");
+      debugPrint(result.toString());
+    } catch (e, stackTrace) {
+      if (!mounted) return;
+      debugPrint("ERROR $e");
+      debugPrint(stackTrace.toString());
+      if (e is SocketException) {
+        _showSnack('No se pudo conectar al servidor. Verificá tu conexión y que el backend esté activo.');
+      } else {
+        _showSnack(e.toString());
+      }
+    }
   }
 
   void _showSnack(String msg) {
@@ -465,15 +486,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide:
-                    BorderSide(color: Colors.white12),
+                BorderSide(color: Colors.white12),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide:
-                    const BorderSide(color: Color(0xFF2979FF), width: 1.5),
+                const BorderSide(color: Color(0xFF2979FF), width: 1.5),
               ),
               contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+              const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
             ),
           ),
         ),
@@ -508,9 +529,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             GestureDetector(
               onTap: () {
                 // TODO: navegar a LoginScreen
-                Navigator.push(context, 
-                MaterialPageRoute(builder: (context)  => LoginScreen()
-                ),
+                Navigator.push(context,
+                  MaterialPageRoute(builder: (context)  => LoginScreen()
+                  ),
                 );
               },
               child: const Text(

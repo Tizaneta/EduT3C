@@ -2,6 +2,7 @@ import 'package:edut3c/models/user.dart';
 import 'package:flutter/material.dart';
 import 'Loginscreen.dart';
 import 'SignScreen.dart';
+import 'AchievementsScreen.dart';
 import '../services/api_service.dart';
 import '../models/user.dart';
 // ─────────────────────────────────────────────
@@ -10,23 +11,9 @@ import '../models/user.dart';
 
 
 final List<Map<String, dynamic>> _mockAchievements = [
-  {'icon': Icons.construction, 'label': 'Constructor\nNovato'},
-  {'icon': Icons.memory, 'label': 'Experto en\nHardware'},
-  {'icon': Icons.wifi, 'label': 'Comunidad\nActiva'},
-  {'icon': Icons.computer, 'label': 'Maestro PC'},
-  {'icon': Icons.terminal, 'label': 'Coder'},
-  {'icon': Icons.shield, 'label': 'Seguridad'},
-  {'icon': Icons.speed, 'label': 'Veloz'},
-  {'icon': Icons.star, 'label': 'Top 100'},
 ];
 
 final List<Map<String, dynamic>> _mockInventory = [
-  {'icon': Icons.calculate, 'label': 'Calculador', 'unlocked': true},
-  {'icon': Icons.pin_drop, 'label': 'Pin Año', 'unlocked': true},
-  {'icon': Icons.android, 'label': 'MaduAnim', 'unlocked': true},
-  {'icon': Icons.bookmark, 'label': 'Bloqueado', 'unlocked': false},
-  {'icon': Icons.wifi, 'label': 'NetPro', 'unlocked': false},
-  {'icon': Icons.code, 'label': 'Dev', 'unlocked': false},
 ];
 
 // ─────────────────────────────────────────────
@@ -45,9 +32,17 @@ const Color _xpBarBg = Color(0xFF1E2A3A);
 // ─────────────────────────────────────────────
 // PANTALLA PRINCIPAL DE PERFIL SOCIAL
 // ─────────────────────────────────────────────
-class SocialProfileScreen extends StatelessWidget {
+class SocialProfileScreen extends StatefulWidget {
   final User user;
   const SocialProfileScreen({super.key, required this.user});
+
+  @override
+  State<SocialProfileScreen> createState() => _SocialProfileScreenState();
+}
+
+class _SocialProfileScreenState extends State<SocialProfileScreen> {
+  // 0 = Perfil, 1 = Mis Amigos
+  int _selectedTab = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -55,41 +50,58 @@ class SocialProfileScreen extends StatelessWidget {
       backgroundColor: _bgDark,
       // Barra superior con título "Social" y tabs Perfil / Mis Amigos
       appBar: _buildAppBar(),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Sección: Avatar + Info básica del usuario ──
-            _UserHeaderCard(user: user,),
-            const SizedBox(height: 14),
+      // Según el tab seleccionado mostramos el perfil o el estado
+      // vacío de "Mis Amigos" (funcionalidad a implementar a futuro).
+      body: _selectedTab == 0 ? _buildProfileBody() : const _FriendsEmptyState(),
+    );
+  }
 
-            // ── Sección: Clasificación / Nivel y XP ──
-            _ClassificationCard(user: user,),
-            const SizedBox(height: 14),
+  Widget _buildProfileBody() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Sección: Avatar + Info básica del usuario ──
+          _UserHeaderCard(user: widget.user),
+          const SizedBox(height: 14),
 
-            // ── Sección: Estadísticas (Bits, cursos, horas) ──
-            _StatsRow(user: user,),
-            const SizedBox(height: 14),
+          // ── Sección: Clasificación / Nivel y XP ──
+          _ClassificationCard(user: widget.user),
+          const SizedBox(height: 14),
 
-            // ── Sección: Logros en cuadrícula ──
-            _SectionHeader(title: 'Logros', actionLabel: 'Ver todos'),
-            const SizedBox(height: 10),
-            _AchievementsGrid(),
-            const SizedBox(height: 14),
+          // ── Sección: Estadísticas (Bits, cursos, horas) ──
+          _StatsRow(user: widget.user),
+          const SizedBox(height: 14),
 
-            // ── Sección: Inventario ──
-            _SectionHeader(title: 'Inventario', actionLabel: 'Ver todos'),
-            const SizedBox(height: 10),
-            _InventoryRow(),
-            const SizedBox(height: 24),
-          ],
-        ),
+          // ── Sección: Logros en cuadrícula ──
+          _SectionHeader(
+            title: 'Logros',
+            actionLabel: 'Ver todos',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AchievementsScreen(user: widget.user),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 10),
+          _AchievementsGrid(),
+          const SizedBox(height: 14),
+
+          // ── Sección: Inventario ──
+          _SectionHeader(title: 'Inventario', actionLabel: 'Ver todos'),
+          const SizedBox(height: 10),
+          _InventoryRow(),
+          const SizedBox(height: 24),
+        ],
       ),
     );
   }
 
-  // AppBar con tabs Perfil / Mis Amigos
+  // AppBar con tabs Perfil / Mis Amigos (sin botones sueltos sin función)
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       backgroundColor: _bgDark,
@@ -102,19 +114,12 @@ class SocialProfileScreen extends StatelessWidget {
           fontSize: 20,
         ),
       ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.crop_square_rounded, color: _textSecondary),
-          onPressed: () {},
-        ),
-        IconButton(
-          icon: const Icon(Icons.crop_square_rounded, color: _textSecondary),
-          onPressed: () {},
-        ),
-      ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(40),
-        child: _ProfileTabBar(user: user),
+        child: _ProfileTabBar(
+          selectedIndex: _selectedTab,
+          onTabSelected: (index) => setState(() => _selectedTab = index),
+        ),
       ),
     );
   }
@@ -123,17 +128,13 @@ class SocialProfileScreen extends StatelessWidget {
 // ─────────────────────────────────────────────
 // TAB BAR: Perfil / Mis Amigos
 // ─────────────────────────────────────────────
-class _ProfileTabBar extends StatefulWidget {
-    final User user;
-    const _ProfileTabBar({
-    required this.user,
+class _ProfileTabBar extends StatelessWidget {
+  final int selectedIndex;
+  final ValueChanged<int> onTabSelected;
+  const _ProfileTabBar({
+    required this.selectedIndex,
+    required this.onTabSelected,
   });
-  @override
-  State<_ProfileTabBar> createState() => _ProfileTabBarState();
-}
-
-class _ProfileTabBarState extends State<_ProfileTabBar> {
-  int _selected = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -146,9 +147,9 @@ class _ProfileTabBarState extends State<_ProfileTabBar> {
   }
 
   Widget _tab(String label, int index) {
-    final bool active = _selected == index;
+    final bool active = selectedIndex == index;
     return GestureDetector(
-      onTap: () => setState(() => _selected = index),
+      onTap: () => onTabSelected(index),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
@@ -176,8 +177,8 @@ class _ProfileTabBarState extends State<_ProfileTabBar> {
 // TARJETA: Avatar + nombre + bio + fecha
 // ─────────────────────────────────────────────
 class _UserHeaderCard extends StatelessWidget {
-    final User user;
-    const _UserHeaderCard({
+  final User user;
+  const _UserHeaderCard({
     required this.user,
   });
   @override
@@ -220,7 +221,7 @@ class _UserHeaderCard extends StatelessWidget {
                 // Chip de nivel
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                   decoration: BoxDecoration(
                     color: _bgCardBorder,
                     borderRadius: BorderRadius.circular(20),
@@ -265,8 +266,8 @@ class _UserHeaderCard extends StatelessWidget {
 // TARJETA: Clasificación – nivel + barra XP
 // ─────────────────────────────────────────────
 class _ClassificationCard extends StatelessWidget {
-    final User user;
-    const _ClassificationCard({
+  final User user;
+  const _ClassificationCard({
     required this.user,
   });
   @override
@@ -348,8 +349,8 @@ class _ClassificationCard extends StatelessWidget {
 // FILA DE ESTADÍSTICAS: Bits – Cursos – Horas
 // ─────────────────────────────────────────────
 class _StatsRow extends StatelessWidget {
-    final User user;
-    const _StatsRow({
+  final User user;
+  const _StatsRow({
     required this.user,
   });
   @override
@@ -439,6 +440,45 @@ class _InventoryRow extends StatelessWidget {
             unlocked: item['unlocked'] as bool,
           );
         },
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// ESTADO VACÍO: MIS AMIGOS
+// (la lista real de amigos es una implementación
+// a futuro; por ahora solo mostramos este aviso)
+// ─────────────────────────────────────────────
+class _FriendsEmptyState extends StatelessWidget {
+  const _FriendsEmptyState();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.people_outline, color: _textSecondary, size: 56),
+            const SizedBox(height: 16),
+            const Text(
+              'Aún no tienes amigos',
+              style: TextStyle(
+                color: _textPrimary,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Muy pronto vas a poder agregar amigos y ver su progreso acá.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: _textSecondary, fontSize: 13, height: 1.4),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -544,7 +584,12 @@ class _XpBar extends StatelessWidget {
 class _SectionHeader extends StatelessWidget {
   final String title;
   final String actionLabel;
-  const _SectionHeader({required this.title, required this.actionLabel});
+  final VoidCallback? onTap;
+  const _SectionHeader({
+    required this.title,
+    required this.actionLabel,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -560,7 +605,7 @@ class _SectionHeader extends StatelessWidget {
           ),
         ),
         GestureDetector(
-          onTap: () {},
+          onTap: onTap ?? () {},
           child: Text(
             actionLabel,
             style: const TextStyle(color: _accentBlue, fontSize: 13),
@@ -603,7 +648,7 @@ class _StatBigCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(label,
               style:
-                  const TextStyle(color: _textSecondary, fontSize: 12)),
+              const TextStyle(color: _textSecondary, fontSize: 12)),
           const SizedBox(height: 2),
           Text(
             value,
@@ -627,9 +672,9 @@ class _StatSmallCard extends StatelessWidget {
   final Color color;
   const _StatSmallCard(
       {required this.icon,
-      required this.label,
-      required this.value,
-      required this.color});
+        required this.label,
+        required this.value,
+        required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -674,35 +719,15 @@ class _AchievementTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: _bgCard,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _bgCardBorder),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Ícono con fondo destacado
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: _bgCardBorder,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: _accentBlue, size: 20),
-          ),
-          const SizedBox(height: 5),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: _textSecondary,
-              fontSize: 9,
-              height: 1.3,
-            ),
-          ),
-        ],
+    return Center(
+      child: Text(
+        label,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: _textSecondary,
+          fontSize: 9,
+          height: 1.3,
+        ),
       ),
     );
   }
@@ -718,38 +743,12 @@ class _InventoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 72,
-      decoration: BoxDecoration(
-        color: _bgCard,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          // Los desbloqueados tienen borde azul, los bloqueados gris
-          color: unlocked ? _accentBlue.withOpacity(0.4) : _bgCardBorder,
-        ),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Si está bloqueado, superpone un candado
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              Icon(
-                icon,
-                color: unlocked ? _accentBlue : _textSecondary.withOpacity(0.3),
-                size: 28,
-              ),
-              if (!unlocked)
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Icon(Icons.lock, color: _textSecondary, size: 13),
-                ),
-            ],
-          ),
-          const SizedBox(height: 5),
-          Text(
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
             label,
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -757,7 +756,7 @@ class _InventoryTile extends StatelessWidget {
               fontSize: 9,
             ),
           ),
-        ],
+        ),
       ),
     );
   }
