@@ -211,6 +211,11 @@ def complete_level(id):
             "message": "Nivel ya completado, no se recibirá recompensas."
         }), 200
 
+    level_up = PlayerService.add_xp(
+    user,
+    xp_reward
+)
+
     bits_reward = game_level.bits_reward
     xp_reward = PlayerService.apply_boost(
     user,
