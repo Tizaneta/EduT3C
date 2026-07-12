@@ -6,8 +6,10 @@ from models.user_item import UserItem
 from models.level import Level
 from models.user_level import UserLevel
 from models.friend import Friend
+from models.achievements import Achievement
+from models.user_achievement import UserAchievement
 from datetime import datetime, timedelta, timezone
-
+from services import PlayerService
 
 # Para migrar los modelos nuevos a la base de datos:
 # flask db migrate -m "X" (es como un git add .)
@@ -28,6 +30,10 @@ levels_bp = Blueprint(
     __name__
 )
 
+achievements_bp = Blueprint(
+    "achievements",
+    __name__
+)
 
 # SELECT * FROM user;
 
@@ -139,54 +145,6 @@ def delete_user(id):
         "message": "Usuario eliminado."
     }), 200
     
-# Endpoint para XP de usuarios /PUT
-
-@users_bp.route("/users/<int:id>/xp", methods=["PUT"])
-def add_xp(id):
-    
-    user = User.query.get(id)
-    
-    if not user: 
-        return jsonify({
-            "message": "Usuario no encontrado."
-        }), 404
-    
-    data = request.json
-    
-    user.xp += data.get("xp", 0)
-    
-    db.session.commit()
-    
-    
-    return jsonify({
-        "message": "XP gained",
-        "user": user.to_dict()
-    })
-
-# Endpoint para bits de usuarios /PUT
-
-@users_bp.route("/users/<int:id>/bits", methods=["PUT"])
-def add_bits(id):
-    
-    user = User.query.get(id)
-    
-    if not user: 
-        return jsonify({
-            "message": "Usuario no encontrado."
-        }), 404
-    
-    data = request.json
-    
-    user.bits += data.get("bits", 0)
-    
-    db.session.commit()
-    
-    
-    return jsonify({
-        "message": "bits gained",
-        "user": user.to_dict()
-    })
-
 # Endpoint para items /GET
 
 @items_bp.route("/items")
@@ -235,16 +193,16 @@ def complete_level(id):
             "message": "Usuario no encontrado."
         }), 404
 
-    level = Level.query.get(id)
+    game_level = Level.query.get(id)
 
-    if not level:
+    if not game_level:
         return jsonify({
             "message": "Nivel no encontrado."
         }), 404
 
     completed_level = UserLevel.query.filter_by(
         user_id=user.id,
-        level_id=level.id,
+        level_id=game_level.id,
         completed=True
     ).first()
 
@@ -253,30 +211,16 @@ def complete_level(id):
             "message": "Nivel ya completado, no se recibirá recompensas."
         }), 200
 
-    xp_reward = level.xp_reward
-    bits_reward = level.bits_reward
-
-    
-
-# Si el boost sigue activo, multiplicamos la recompensa.
-
-    if (
-        user.xp_boost_until
-        and user.xp_boost_until > datetime.now()):
-        xp_reward *= user.xp_multiplier
-    else:
-        user.xp_multiplier = 1.0
-
-# Convertimos a entero por si el multiplicador es 1.5
-
-    xp_reward = int(xp_reward)
-    
-    user.xp += xp_reward
+    bits_reward = game_level.bits_reward
+    xp_reward = PlayerService.apply_boost(
+    user,
+    game_level.xp_reward
+)
     user.bits += bits_reward
 
     new_completion = UserLevel(
         user_id=user.id,
-        level_id=level.id,
+        level_id=game_level.id,
         completed=True
     )
 
@@ -575,3 +519,67 @@ def equip_item(id):
     return jsonify({
         "message": "Objeto equipado."
     })
+    
+# Endpoint de los logros
+
+@achievements_bp.route("/achievements")
+def get_achievements():
+    achievements = Achievement.query.all()
+    return jsonify([
+        achievement.to_dict() 
+        for achievement in achievements])
+
+# Endpoint de los logros de los usuarios
+
+@achievements_bp.route("/users/<int:id>/achievements")
+def get_achievements_user(id):
+    
+    user_achievements = UserAchievement.query.filter_by(user_id=id).all()
+    
+    if not user_achievements:
+        return jsonify({
+        "message": "El usuario no tiene logros."
+    }), 404
+    
+    return jsonify([user_achievement.achievement.to_dict() for user_achievement in user_achievements])
+    
+    
+    
+@achievements_bp.route("/users/<int:id>/achievements", methods=["POST"])
+def unlock_achievement(id):
+    
+    data = request.json
+
+    achievement_id = data["achievement_id"]
+    
+    achievement = Achievement.query.get(achievement_id)
+    
+    if not achievement:
+        return jsonify({
+        "message": "El logro no existe."
+    }), 404
+
+    # Verificar que no lo tenga ya
+
+    exists = UserAchievement.query.filter_by(
+        user_id=id,
+        achievement_id=achievement_id
+    ).first()
+
+    if exists:
+        return jsonify({
+            "message": "El usuario ya posee este logro."
+        }), 400
+
+    new_achievement = UserAchievement(
+        user_id=id,
+        achievement_id=achievement_id,
+        obtained_at=datetime.utcnow()
+    )
+
+    db.session.add(new_achievement)
+    db.session.commit()
+
+    return jsonify({
+        "message": "Logro desbloqueado."
+    }), 201

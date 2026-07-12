@@ -2,7 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from db.database import db
 from config.config import Config
-from api.users import users_bp, items_bp, levels_bp
+from api.users import users_bp, items_bp, levels_bp, achievements_bp
 from flask_migrate import Migrate
 
 #imports de la base de datos
@@ -13,6 +13,8 @@ from models.user_level import UserLevel
 from models.rank import Rank
 from models.item import Item
 from models.user_item import UserItem
+from models.achievements import Achievement
+from models.user_achievement import UserAchievement
 
 app = Flask(__name__)
 
@@ -28,6 +30,8 @@ app.register_blueprint(items_bp)
 
 app.register_blueprint(levels_bp)
 
+app.register_blueprint(achievements_bp)
+
 migrate = Migrate(
     app,
     db
@@ -38,10 +42,7 @@ def home():
     return  {
         "message": "Backend funcionando al parecer"
     }
-    
-with app.app_context():
-    db.create_all()
-    
+     
 
 if __name__ == "__main__":
     app.run(

@@ -4,30 +4,8 @@ import 'Loginscreen.dart';
 import 'SignScreen.dart';
 import '../services/api_service.dart';
 import '../models/user.dart';
-// ─────────────────────────────────────────────
-// DATOS DE EJEMPLO (simulan un usuario real)
-// ─────────────────────────────────────────────
-
-
-final List<Map<String, dynamic>> _mockAchievements = [
-  {'icon': Icons.construction, 'label': 'Constructor\nNovato'},
-  {'icon': Icons.memory, 'label': 'Experto en\nHardware'},
-  {'icon': Icons.wifi, 'label': 'Comunidad\nActiva'},
-  {'icon': Icons.computer, 'label': 'Maestro PC'},
-  {'icon': Icons.terminal, 'label': 'Coder'},
-  {'icon': Icons.shield, 'label': 'Seguridad'},
-  {'icon': Icons.speed, 'label': 'Veloz'},
-  {'icon': Icons.star, 'label': 'Top 100'},
-];
-
-final List<Map<String, dynamic>> _mockInventory = [
-  {'icon': Icons.calculate, 'label': 'Calculador', 'unlocked': true},
-  {'icon': Icons.pin_drop, 'label': 'Pin Año', 'unlocked': true},
-  {'icon': Icons.android, 'label': 'MaduAnim', 'unlocked': true},
-  {'icon': Icons.bookmark, 'label': 'Bloqueado', 'unlocked': false},
-  {'icon': Icons.wifi, 'label': 'NetPro', 'unlocked': false},
-  {'icon': Icons.code, 'label': 'Dev', 'unlocked': false},
-];
+import '../data/achievement_repository.dart';
+import '../models/achievement.dart';
 
 // ─────────────────────────────────────────────
 // COLORES DEL TEMA OSCURO
@@ -45,12 +23,23 @@ const Color _xpBarBg = Color(0xFF1E2A3A);
 // ─────────────────────────────────────────────
 // PANTALLA PRINCIPAL DE PERFIL SOCIAL
 // ─────────────────────────────────────────────
-class SocialProfileScreen extends StatelessWidget {
+class SocialProfileScreen extends StatefulWidget {
   final User user;
   const SocialProfileScreen({super.key, required this.user});
 
   @override
+  State<SocialProfileScreen> createState() => _SocialProfileScreenState();
+}
+
+class _SocialProfileScreenState extends State<SocialProfileScreen> {
+  int _selected = 0;
+  final AchievementRepository _achievementRepository = const AchievementRepository();
+
+  @override
   Widget build(BuildContext context) {
+    final achievements = _achievementRepository.getAchievements();
+    final inventory = _achievementRepository.getInventory();
+
     return Scaffold(
       backgroundColor: _bgDark,
       // Barra superior con título "Social" y tabs Perfil / Mis Amigos
@@ -61,27 +50,27 @@ class SocialProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ── Sección: Avatar + Info básica del usuario ──
-            _UserHeaderCard(user: user,),
+            _UserHeaderCard(user: widget.user,),
             const SizedBox(height: 14),
 
             // ── Sección: Clasificación / Nivel y XP ──
-            _ClassificationCard(user: user,),
+            _ClassificationCard(user: widget.user,),
             const SizedBox(height: 14),
 
             // ── Sección: Estadísticas (Bits, cursos, horas) ──
-            _StatsRow(user: user,),
+            _StatsRow(user: widget.user,),
             const SizedBox(height: 14),
 
             // ── Sección: Logros en cuadrícula ──
             _SectionHeader(title: 'Logros', actionLabel: 'Ver todos'),
             const SizedBox(height: 10),
-            _AchievementsGrid(),
+            _AchievementsGrid(achievements: achievements),
             const SizedBox(height: 14),
 
             // ── Sección: Inventario ──
             _SectionHeader(title: 'Inventario', actionLabel: 'Ver todos'),
             const SizedBox(height: 10),
-            _InventoryRow(),
+            _InventoryRow(inventory: inventory),
             const SizedBox(height: 24),
           ],
         ),
@@ -92,29 +81,27 @@ class SocialProfileScreen extends StatelessWidget {
   // AppBar con tabs Perfil / Mis Amigos
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
+      automaticallyImplyLeading: false,
       backgroundColor: _bgDark,
       elevation: 0,
       title: const Text(
-        'Social',
+        "Tu perfil",
         style: TextStyle(
           color: _textPrimary,
           fontWeight: FontWeight.bold,
           fontSize: 20,
         ),
       ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.crop_square_rounded, color: _textSecondary),
-          onPressed: () {},
-        ),
-        IconButton(
-          icon: const Icon(Icons.crop_square_rounded, color: _textSecondary),
-          onPressed: () {},
-        ),
-      ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(40),
-        child: _ProfileTabBar(user: user),
+        child: _ProfileTabBar(
+        selected: _selected,
+        onChanged: (index) {
+        setState(() {
+        _selected = index;
+      });
+  },
+),
       ),
     );
   }
@@ -123,54 +110,37 @@ class SocialProfileScreen extends StatelessWidget {
 // ─────────────────────────────────────────────
 // TAB BAR: Perfil / Mis Amigos
 // ─────────────────────────────────────────────
-class _ProfileTabBar extends StatefulWidget {
-    final User user;
-    const _ProfileTabBar({
-    required this.user,
+class _ProfileTabBar extends StatelessWidget {
+  final int selected;
+  final ValueChanged<int> onChanged;
+  const _ProfileTabBar({
+  required this.selected,
+  required this.onChanged,
   });
-  @override
-  State<_ProfileTabBar> createState() => _ProfileTabBarState();
-}
 
-class _ProfileTabBarState extends State<_ProfileTabBar> {
-  int _selected = 0;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _tab('Perfil', 0),
-        _tab('Mis Amigos', 1),
+        _tab("Perfil", 0),
+        _tab("Mis Amigos", 1),
       ],
     );
   }
 
   Widget _tab(String label, int index) {
-    final bool active = _selected == index;
+    final active = selected == index;
+
     return GestureDetector(
-      onTap: () => setState(() => _selected = index),
+      onTap: () => onChanged(index),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: active ? _accentBlue : Colors.transparent,
-              width: 2,
-            ),
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: active ? _accentBlue : _textSecondary,
-            fontWeight: active ? FontWeight.bold : FontWeight.normal,
-            fontSize: 14,
-          ),
-        ),
+        
       ),
     );
   }
-}
+  }
+
 
 // ─────────────────────────────────────────────
 // TARJETA: Avatar + nombre + bio + fecha
@@ -354,40 +324,13 @@ class _StatsRow extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        // Tarjeta Bits (más grande, con ícono destacado)
-        Expanded(
-          flex: 2,
-          child: _StatBigCard(
-            icon: Icons.toll_rounded,
-            label: 'Mis Bits',
-            value: user.username,
-          ),
-        ),
-        const SizedBox(width: 10),
-        // Columna con dos tarjetas pequeñas
-        Expanded(
-          flex: 3,
-          child: Column(
-            children: [
-              _StatSmallCard(
-                icon: Icons.school_outlined,
-                label: 'Cursos',
-                value: '${user.level}',
-                color: _accentBlue,
-              ),
-              const SizedBox(height: 10),
-              _StatSmallCard(
-                icon: Icons.timer_outlined,
-                label: 'Horas',
-                value: '${user.username}h',
-                color: _accentGold,
-              ),
-            ],
-          ),
-        ),
-      ],
+    return SizedBox(
+      width: double.infinity,
+      child: _StatBigCard(
+        icon: Icons.toll_rounded,
+        label: 'Mis Bits',
+        value: user.username,
+      ),
     );
   }
 }
@@ -396,10 +339,14 @@ class _StatsRow extends StatelessWidget {
 // CUADRÍCULA DE LOGROS
 // ─────────────────────────────────────────────
 class _AchievementsGrid extends StatelessWidget {
+  final List<AchievementItem> achievements;
+
+  const _AchievementsGrid({required this.achievements});
+
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      shrinkWrap: true, // no hace scroll propio, usa el padre
+      shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 4,
@@ -407,12 +354,12 @@ class _AchievementsGrid extends StatelessWidget {
         mainAxisSpacing: 10,
         childAspectRatio: 0.85,
       ),
-      itemCount: _mockAchievements.length,
+      itemCount: achievements.length,
       itemBuilder: (context, index) {
-        final item = _mockAchievements[index];
+        final item = achievements[index];
         return _AchievementTile(
-          icon: item['icon'] as IconData,
-          label: item['label'] as String,
+          icon: item.icon,
+          label: item.label,
         );
       },
     );
@@ -423,20 +370,24 @@ class _AchievementsGrid extends StatelessWidget {
 // FILA DE INVENTARIO
 // ─────────────────────────────────────────────
 class _InventoryRow extends StatelessWidget {
+  final List<InventoryItem> inventory;
+
+  const _InventoryRow({required this.inventory});
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 90,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: _mockInventory.length,
+        itemCount: inventory.length,
         separatorBuilder: (_, __) => const SizedBox(width: 10),
         itemBuilder: (context, index) {
-          final item = _mockInventory[index];
+          final item = inventory[index];
           return _InventoryTile(
-            icon: item['icon'] as IconData,
-            label: item['label'] as String,
-            unlocked: item['unlocked'] as bool,
+            icon: item.icon,
+            label: item.label,
+            unlocked: item.unlocked,
           );
         },
       ),

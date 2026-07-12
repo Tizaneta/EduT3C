@@ -55,6 +55,52 @@ static Future<Map<String, dynamic>> register(
 
   throw Exception(data["message"]);
 }
+static Future<List<dynamic>> getAchievements() async {
+  final response = await http.get(
+    Uri.parse("$baseUrl/achievements"),
+  );
+
+  final data = jsonDecode(response.body);
+
+  if (response.statusCode == 200) {
+    return data;
+  }
+
+  throw Exception("No se pudieron obtener los logros");
+}
+static Future<List<dynamic>> getUserAchievements(int userId) async {
+  final response = await http.get(
+    Uri.parse("$baseUrl/users/$userId/achievements"),
+  );
+
+  final data = jsonDecode(response.body);
+
+  if (response.statusCode == 200) {
+    return data;
+  }
+
+  throw Exception(data["message"]);
+}
+static Future<void> unlockAchievement(
+    int userId,
+    int achievementId,
+) async {
+
+  final response = await http.post(
+    Uri.parse("$baseUrl/users/$userId/achievements"),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: jsonEncode({
+      "achievement_id": achievementId,
+    }),
+  );
+
+  if (response.statusCode != 201) {
+    final data = jsonDecode(response.body);
+    throw Exception(data["message"]);
+  }
+}
 }
 
 
