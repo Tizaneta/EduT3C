@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'SignScreen.dart';
 import '../services/api_service.dart';
@@ -40,44 +41,35 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleLogin() async {
     final email    = _emailController.text.trim();
     final password = _passwordController.text;
-      if (
-        email.isEmpty ||
+    if (
+    email.isEmpty ||
         password.isEmpty
-      ) {
-        _showSnack('Por favor completá todos los campos.');
-        return;
-      }
-      try {
-      final result =
-        await ApiService.login(
-          email,
-          password,
-        );
-      final user = User.fromJson(
-      result["user"],
+    ) {
+      _showSnack('Por favor completá todos los campos.');
+      return;
+    }
+
+    try {
+      final user = await ApiService.login(
+        email,
+        password,
       );
       if (!mounted) return;
       Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-      builder: (_) => Home(user: user,),
-    ),
-  );
-        debugPrint(result.toString());
-      } catch (e) {
-        if (!mounted) return;
+        context,
+        MaterialPageRoute(
+          builder: (_) => Home(user: user),
+        ),
+      );
+      debugPrint(user.toString());
+    } catch (e) {
+      if (!mounted) return;
+      if (e is SocketException) {
+        _showSnack('No se pudo conectar al servidor. Verificá tu conexión y que el backend esté activo.');
+      } else {
         _showSnack(e.toString());
-        }
-
-    // TODO: validar credenciales contra tu backend
-    // Si el login es exitoso, navegá a Home así:
-    //
-    // Navigator.pushReplacement(
-      // context,
-      // MaterialPageRoute(builder: (_) => Home()),
-     //);
-
-    _showSnack('Iniciando sesión...');
+      }
+    }
   }
 
   void _showSnack(String msg) {
@@ -463,7 +455,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 hintText: hint,
                 hintStyle:
-                    const TextStyle(color: Colors.white30, fontSize: 14),
+                const TextStyle(color: Colors.white30, fontSize: 14),
                 suffixIcon: suffix,
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(

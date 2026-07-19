@@ -21,7 +21,7 @@ class User {
       username: json["username"],
       email: json["email"],
       xp: json["xp"] ?? 0,
-      level: ((json["xp"] ?? 0) ~/ 1000) + 1,
+      level: json["level"] ?? (((json["xp"] ?? 0) ~/ 1000) + 1),
       bits: json["bits"] ?? 0,
     );
   }

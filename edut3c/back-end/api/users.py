@@ -9,7 +9,8 @@ from models.friend import Friend
 from models.achievements import Achievement
 from models.user_achievement import UserAchievement
 from datetime import datetime, timedelta, timezone
-from services import PlayerService
+from services.player_service import PlayerService
+from services.achievement_service import AchievementService
 
 # Para migrar los modelos nuevos a la base de datos:
 # flask db migrate -m "X" (es como un git add .)
@@ -211,17 +212,18 @@ def complete_level(id):
             "message": "Nivel ya completado, no se recibirá recompensas."
         }), 200
 
-    level_up = PlayerService.add_xp(
-    user,
-    xp_reward
-)
-
     bits_reward = game_level.bits_reward
     xp_reward = PlayerService.apply_boost(
     user,
     game_level.xp_reward
 )
+    level_up = PlayerService.add_xp(
+    user,
+    xp_reward
+)
     user.bits += bits_reward
+
+    unlocked = AchievementService.check_xp_achievements(user)
 
     new_completion = UserLevel(
         user_id=user.id,
@@ -236,6 +238,8 @@ def complete_level(id):
         "message": "Nivel completado",
         "xp_gained": xp_reward,
         "bits_gained": bits_reward,
+        "level_up": level_up,
+        "achievements": unlocked,
         "user": user.to_dict()
     }), 200
     

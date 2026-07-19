@@ -1,17 +1,62 @@
 import 'package:flutter/material.dart';
 import 'LevelScreen.dart';
+import '../services/progress_service.dart';
 
-class StationScreens extends StatelessWidget {
+class StationScreens extends StatefulWidget {
   final Map<int, List<Map<String, dynamic>>> levelsData;
   final String title;
   final int levels;
+
+  // Identificador del componente (ej: "cpu", "gpu", "storage" — las mismas
+  // keys que en data/HardwareData.dart). Si es null, esta pantalla se
+  // comporta exactamente como antes: todos los niveles quedan siempre
+  // desbloqueados. Esto es así para no romper NetScreen ni SoftwareScreen,
+  // que reutilizan esta misma pantalla sin sistema de bloqueo (todavía).
+  final String? componentKey;
 
   const StationScreens({
     super.key,
     required this.levelsData,
     required this.title,
     required this.levels,
+    this.componentKey,
   });
+
+  @override
+  State<StationScreens> createState() => _StationScreensState();
+}
+
+class _StationScreensState extends State<StationScreens> {
+  int _maxCompletedLevel = 0;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProgress();
+  }
+
+  Future<void> _loadProgress() async {
+    if (widget.componentKey == null) {
+      // Sin componentKey no hay sistema de bloqueo: todo desbloqueado,
+      // igual que el comportamiento original de esta pantalla.
+      if (!mounted) return;
+      setState(() => _loading = false);
+      return;
+    }
+    final max =
+    await ProgressService.getMaxCompletedLevel(widget.componentKey!);
+    if (!mounted) return;
+    setState(() {
+      _maxCompletedLevel = max;
+      _loading = false;
+    });
+  }
+
+  bool _isLocked(int level) {
+    if (widget.componentKey == null) return false;
+    return level > _maxCompletedLevel + 1;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +65,10 @@ class StationScreens extends StatelessWidget {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(
-          title,
+          widget.title,
           style: const TextStyle(
-            color: Colors.cyan, 
-            fontWeight: FontWeight.bold, 
+            color: Colors.cyan,
+            fontWeight: FontWeight.bold,
             letterSpacing: 1.5,
           ),
         ),
@@ -47,43 +92,68 @@ class StationScreens extends StatelessWidget {
 
           // 3. LISTA DE NIVELES FUTURISTAS
           SafeArea(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              itemCount: levels,
+            child: _loading
+                ? const Center(
+              child: CircularProgressIndicator(color: Colors.cyan),
+            )
+                : ListView.builder(
+              padding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              itemCount: widget.levels,
               itemBuilder: (context, index) {
                 // El index arranca en 0, los niveles en tu base de datos en 1
-                final currentLevel = index + 1; 
+                final currentLevel = index + 1;
+                final locked = _isLocked(currentLevel);
 
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 20), // Separación entre niveles
                   child: ElevatedButton(
-                    // Mantenemos intacto el comportamiento original de navegación
-                    onPressed: () {
-                      Navigator.push(
+                    onPressed: locked
+                        ? () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Completá el nivel anterior para desbloquear este.',
+                          ),
+                        ),
+                      );
+                    }
+                        : () async {
+                      await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => LevelScreen(
                             levelNumber: currentLevel,
-                            contenido: levelsData[currentLevel]!,
+                            contenido: widget.levelsData[currentLevel]!,
+                            componentKey: widget.componentKey,
                           ),
                         ),
                       );
+                      // Al volver del nivel, recargamos el progreso
+                      // por si se acaba de desbloquear el siguiente.
+                      await _loadProgress();
                     },
-                    
+
                     child: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
                       decoration: BoxDecoration(
-                        // Fondo oscuro semitransparente
-                        color: const Color(0xFF09101A).withOpacity(0.85),
+                        // Fondo oscuro semitransparente (más apagado si está bloqueado)
+                        color: locked
+                            ? const Color(0xFF09101A).withOpacity(0.5)
+                            : const Color(0xFF09101A).withOpacity(0.85),
                         borderRadius: BorderRadius.circular(12),
-                        // Borde de neón cyan brillante
+                        // Borde de neón cyan brillante (gris si está bloqueado)
                         border: Border.all(
-                          color: Colors.cyan.withOpacity(0.6),
+                          color: locked
+                              ? Colors.white24
+                              : Colors.cyan.withOpacity(0.6),
                           width: 2,
                         ),
-                        // Sombra para el efecto de resplandor neón
-                        boxShadow: [
+                        // Sombra para el efecto de resplandor neón (sin sombra si está bloqueado)
+                        boxShadow: locked
+                            ? []
+                            : [
                           BoxShadow(
                             color: Colors.cyan.withOpacity(0.15),
                             blurRadius: 8,
@@ -97,13 +167,25 @@ class StationScreens extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.cyan.withOpacity(0.1),
+                              color: locked
+                                  ? Colors.white10
+                                  : Colors.cyan.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(6),
-                              border: Border.all(color: Colors.cyan.withOpacity(0.4)),
+                              border: Border.all(
+                                color: locked
+                                    ? Colors.white24
+                                    : Colors.cyan.withOpacity(0.4),
+                              ),
                             ),
                             constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
                             alignment: Alignment.center,
-                            child: Text(
+                            child: locked
+                                ? const Icon(
+                              Icons.lock_outline,
+                              color: Colors.white38,
+                              size: 20,
+                            )
+                                : Text(
                               "$currentLevel",
                               style: const TextStyle(
                                 color: Colors.cyan,
@@ -113,13 +195,13 @@ class StationScreens extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 20),
-                          
+
                           // Texto descriptivo del botón
                           Expanded(
                             child: Text(
                               "Nivel $currentLevel",
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: locked ? Colors.white38 : Colors.white,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 0.8,
@@ -127,11 +209,13 @@ class StationScreens extends StatelessWidget {
                             ),
                           ),
 
-                          // Icono decorativo de flecha tecnológica hacia adelante
+                          // Icono decorativo (candado si está bloqueado, flecha si no)
                           Icon(
-                            Icons.arrow_forward_ios,
-                            size: 16,
-                            color: Colors.cyan.withOpacity(0.7),
+                            locked ? Icons.lock_outline : Icons.arrow_forward_ios,
+                            size: locked ? 18 : 16,
+                            color: locked
+                                ? Colors.white24
+                                : Colors.cyan.withOpacity(0.7),
                           ),
                         ],
                       ),

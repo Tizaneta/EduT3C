@@ -33,6 +33,7 @@ class User(db.Model):
     
     level = db.Column(
         db.Integer,
+        nullable = False,
         default=1,
     )
     

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:edut3c/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:edut3c/screens/Loginscreen.dart';
@@ -63,31 +64,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (password.length < 8) {
       _showSnack('La contraseña debe tener al menos 8 caracteres.');
       return;
-    } 
+    }
+
     try {
-      debugPrint("1");
-      final result =
-        await ApiService.register(
-          username,
-          email,
-          password,
-        );
-      debugPrint("2");
+      await ApiService.register(
+        username,
+        email,
+        password,
+      );
       if (!mounted) return;
-      debugPrint("3: pasó el mounted");
       Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-      builder: (_) => const LoginScreen(),
-    ),
-  );   
-        debugPrint("Ya pasó el navigator.");
-        debugPrint(result.toString());
-      } catch (e, stackTrace) {
-        if (!mounted) return;
-        debugPrint("ERROR $e");
-        debugPrint(stackTrace.toString());
-        }
+        context,
+        MaterialPageRoute(
+          builder: (_) => const LoginScreen(),
+        ),
+      );
+    } catch (e, stackTrace) {
+      if (!mounted) return;
+      debugPrint("ERROR $e");
+      debugPrint(stackTrace.toString());
+      if (e is SocketException) {
+        _showSnack('No se pudo conectar al servidor. Verificá tu conexión y que el backend esté activo.');
+      } else {
+        _showSnack(e.toString());
+      }
+    }
   }
 
   void _showSnack(String msg) {
@@ -207,7 +208,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2979FF).withOpacity(0.5),
+            color: const Color(0xFF2979FF).withValues(alpha: 0.5),
             blurRadius: 20,
             spreadRadius: 2,
           ),
@@ -241,12 +242,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF0D1F38).withOpacity(0.9),
+        color: const Color(0xFF0D1F38).withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.white12),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2979FF).withOpacity(0.08),
+            color: const Color(0xFF2979FF).withValues(alpha: 0.08),
             blurRadius: 24,
             spreadRadius: 2,
           ),
@@ -325,7 +326,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 elevation: 8,
-                shadowColor: const Color(0xFF2979FF).withOpacity(0.5),
+                shadowColor: const Color(0xFF2979FF).withValues(alpha: 0.5),
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -438,7 +439,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFF0A1628),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: const Color(0xFF2979FF).withOpacity(0.4)),
+            border: Border.all(color: const Color(0xFF2979FF).withValues(alpha: 0.4)),
           ),
           child: Icon(icon, color: const Color(0xFF4FC3F7), size: 22),
         ),
@@ -465,15 +466,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide:
-                    BorderSide(color: Colors.white12),
+                BorderSide(color: Colors.white12),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide:
-                    const BorderSide(color: Color(0xFF2979FF), width: 1.5),
+                const BorderSide(color: Color(0xFF2979FF), width: 1.5),
               ),
               contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+              const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
             ),
           ),
         ),
@@ -508,9 +509,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             GestureDetector(
               onTap: () {
                 // TODO: navegar a LoginScreen
-                Navigator.push(context, 
-                MaterialPageRoute(builder: (context)  => LoginScreen()
-                ),
+                Navigator.push(context,
+                  MaterialPageRoute(builder: (context)  => LoginScreen()
+                  ),
                 );
               },
               child: const Text(
@@ -577,7 +578,7 @@ class _CircuitPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final linePaint = Paint()
-      ..color = const Color(0xFF1A3A5C).withOpacity(0.3)
+      ..color = const Color(0xFF1A3A5C).withValues(alpha: 0.3)
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
 
@@ -605,7 +606,7 @@ class _CircuitPainter extends CustomPainter {
 
     // Nodos (puntos de soldadura)
     final dotPaint = Paint()
-      ..color = const Color(0xFF2979FF).withOpacity(0.5)
+      ..color = const Color(0xFF2979FF).withValues(alpha: 0.5)
       ..style = PaintingStyle.fill;
 
     final dots = [
