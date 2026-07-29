@@ -1,3 +1,5 @@
+import '../models/level_local.dart';
+
 final Map<int, List<Map<String, dynamic>>> fundamentosLevels = {
   1: [
     {

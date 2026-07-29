@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'StationScreens.dart';
 import '../data/NetData.dart';
+import '../models/level_local.dart';
 
 class NetScreen extends StatefulWidget {
   @override
@@ -84,7 +85,7 @@ class _NetScreenState extends State<NetScreen> {
       BuildContext context,
       double left,
       double top,
-      Map<int, List<Map<String, dynamic>>> data,
+      Map<int, LocalLevel> data,
       String title,
       ) {
     return Positioned(

@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../widgets/video_block.dart';
-import 'package:flutter/rendering.dart';
 import '../widgets/nobackscroll.dart';
-import '../services/progress_service.dart';
+import '../services/level_service.dart';
+import '../data/session.dart';
 
 class LevelScreen extends StatefulWidget {
+  final int backendLevelId;
   final int levelNumber;
   final List<Map<String, dynamic>> contenido;
 
@@ -17,6 +18,7 @@ class LevelScreen extends StatefulWidget {
 
   const LevelScreen({
     super.key,
+    required this.backendLevelId,
     required this.levelNumber,
     required this.contenido,
     this.componentKey,
@@ -82,12 +84,13 @@ class _LevelScreenState extends State<LevelScreen> {
     );
   }
 
-  void finishLevel() {
-    // Guardamos el progreso (nivel más alto completado) para que
-    // StationScreens y HardwareScreen sepan qué desbloquear.
-    if (widget.componentKey != null) {
-      ProgressService.completeLevel(widget.componentKey!, widget.levelNumber);
-    }
+  Future<void> finishLevel() async {
+    final result = await LevelService.completeLevel(
+    userId: Session.currentUser!.id,
+    levelId: widget.backendLevelId,
+  );
+    if (!mounted) return;
+    print(result);
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -97,7 +100,8 @@ class _LevelScreenState extends State<LevelScreen> {
           child: AlertDialog(
             backgroundColor: const Color(0xFF0D1B2A),
             title: const Text("¡Nivel completado!", style: TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold)),
-            content: const Text("Ganaste 120 XP y 45 bits", style: TextStyle(color: Colors.white)),
+            content: Text("Ganaste ${result["xp_gained"]} XP\n Ganaste ${result["bits_gained"]} Bits", 
+            style: TextStyle(color: Colors.white)),
             actions: [
               ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.cyan),

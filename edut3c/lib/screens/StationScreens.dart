@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'LevelScreen.dart';
 import '../services/progress_service.dart';
+import '../models/level_local.dart';
+import '../models/level.dart';
 
 class StationScreens extends StatefulWidget {
-  final Map<int, List<Map<String, dynamic>>> levelsData;
+  final Map<int, LocalLevel> levelsData;
   final String title;
   final int levels;
-
   // Identificador del componente (ej: "cpu", "gpu", "storage" — las mismas
   // keys que en data/HardwareData.dart). Si es null, esta pantalla se
   // comporta exactamente como antes: todos los niveles quedan siempre
@@ -119,12 +120,14 @@ class _StationScreensState extends State<StationScreens> {
                       );
                     }
                         : () async {
+                      final level = widget.levelsData[currentLevel]!;
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => LevelScreen(
+                            backendLevelId: level.backendId,
                             levelNumber: currentLevel,
-                            contenido: widget.levelsData[currentLevel]!,
+                            contenido: level.contenido,
                             componentKey: widget.componentKey,
                           ),
                         ),

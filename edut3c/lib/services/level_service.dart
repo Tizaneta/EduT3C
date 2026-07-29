@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../data/session.dart';
 import 'api_service.dart';
 
 class LevelService {
@@ -9,23 +10,13 @@ class LevelService {
     required int userId,
     required int levelId,
   }) async {
-
     final response = await http.post(
       Uri.parse("${ApiService.baseUrl}/levels/$levelId/complete"),
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: jsonEncode({
-        "user_id": userId,
-      }),
+      headers: {"Content-Type": "application/json",},
+      body: jsonEncode({"user_id": Session.currentUser!.id,}),
     );
-
     final data = jsonDecode(response.body);
-
     if (response.statusCode == 200) {
-      return data;
-    }
-
+      return data;}
     throw Exception(data["message"]);
-  }
-}
+  }}

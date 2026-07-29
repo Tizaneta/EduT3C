@@ -4,6 +4,7 @@ import 'SignScreen.dart';
 import '../services/api_service.dart';
 import 'home.dart';
 import '../models/user.dart';
+import '../data/session.dart';
 // TODO: importá Home cuando tengas la autenticación lista
 // import 'home.dart';
 
@@ -54,6 +55,9 @@ class _LoginScreenState extends State<LoginScreen> {
         email,
         password,
       );
+
+      Session.currentUser = user;
+
       if (!mounted) return;
       Navigator.pushReplacement(
         context,

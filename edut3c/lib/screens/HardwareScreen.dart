@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'StationScreens.dart';
 import '../data/HardwareData.dart';
 import '../services/progress_service.dart';
-
+import '../data/session.dart';
+import '../models/level_local.dart';
 // ─── Posiciones de los hotspots ────────────────────────────────────────────
 // Lista (no mapa) porque un mismo componente puede tener más de un punto
 // en la imagen (ej: si algún día separás visualmente dos tornillos del

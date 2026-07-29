@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'StationScreens.dart';
 import '../data/SoftwareData.dart';
+import '../models/level_local.dart';
 
 class SoftwareScreen extends StatefulWidget {
   @override
@@ -107,7 +108,7 @@ class _SoftwareScreenState extends State<SoftwareScreen> {
         required double top,
         required double width,
         required double height,
-        required Map<int, List<Map<String, dynamic>>> data,
+        required Map<int, LocalLevel> data,
         required String title,
       }) {
     return Positioned(

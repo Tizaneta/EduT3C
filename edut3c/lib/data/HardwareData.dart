@@ -1,3 +1,4 @@
+import '../models/level_local.dart';
 // ════════════════════════════════════════════════════════════
 //  HardwareData.dart
 //  Cada nivel de cada componente tiene 3 (o más) pares (video, quiz).
@@ -8,7 +9,10 @@
 
 final cpuLevels = {
   // Nivel 1 — ¿Qué es el microprocesador?
-  1: [
+  1: 
+    LocalLevel(
+    backendId: 1,
+    contenido: [
     {"type": "video", "path": "assets/videos/test_video2.mp4"},
     {
       "type": "quiz",
@@ -31,9 +35,11 @@ final cpuLevels = {
       "correctAnswer": "En el zócalo (socket) central",
     },
   ],
-
+    ),
   // Nivel 2 — Núcleos (cores) del CPU
-  2: [
+  2: LocalLevel(
+    backendId: 2,
+    contenido: [
     {"type": "video", "path": "assets/videos/test_video2.mp4"},
     {
       "type": "quiz",
@@ -56,7 +62,7 @@ final cpuLevels = {
       "correctAnswer": "4 núcleos",
     },
   ],
-
+  ),
   // Nivel 3 — Frecuencia y velocidad de reloj
   3: [
     {"type": "video", "path": "assets/videos/test_video2.mp4"},
