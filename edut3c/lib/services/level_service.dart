@@ -7,7 +7,6 @@ import 'api_service.dart';
 class LevelService {
 
   static Future<Map<String, dynamic>> completeLevel({
-    required int userId,
     required int levelId,
   }) async {
     final response = await http.post(

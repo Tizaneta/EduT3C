@@ -14,14 +14,12 @@ class LevelScreen extends StatefulWidget {
   // Si es null, el nivel se completa igual (se muestra el diálogo de
   // "Nivel completado") pero no se guarda progreso en ningún lado —
   // es el caso de NetScreen/SoftwareScreen, que todavía no usan este sistema.
-  final String? componentKey;
 
   const LevelScreen({
     super.key,
     required this.backendLevelId,
     required this.levelNumber,
     required this.contenido,
-    this.componentKey,
   });
 
   @override
@@ -86,7 +84,6 @@ class _LevelScreenState extends State<LevelScreen> {
 
   Future<void> finishLevel() async {
     final result = await LevelService.completeLevel(
-    userId: Session.currentUser!.id,
     levelId: widget.backendLevelId,
   );
     if (!mounted) return;

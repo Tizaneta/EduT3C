@@ -1,6 +1,5 @@
 import 'NetScreen.dart';
 import 'SoftwareScreen.dart';
-import 'SoftwareScreenP.dart';
 import 'package:flutter/material.dart';
 import 'SocialProfileScreen.dart';
 import 'HardwareIntroScreen.dart';
@@ -67,7 +66,6 @@ class _HomeState extends State<Home> {
         });},
         children: [
           HardwareIntroScreen(),
-          SoftwareScreenPP(),
           SoftwareScreen(),
           NetScreen(),
           SocialProfileScreen(user: widget.user,),
