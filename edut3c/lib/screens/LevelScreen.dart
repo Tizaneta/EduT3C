@@ -55,9 +55,9 @@ class _LevelScreenState extends State<LevelScreen> {
                     canPop: false,
                     child: AlertDialog(
                       backgroundColor: const Color(0xFF0D1B2A),
-                      title: const Text("You've run out of time partner!", style: TextStyle(color: Colors.white)),
+                      title: const Text("Se acabó el tiempo, es una verdadera pena.", style: TextStyle(color: Colors.white)),
                       content: Text(
-                        "The correct answer was just like ${widget.contenido[currentPage]["correctAnswer"]}",
+                        "La respuesta era ${widget.contenido[currentPage]["correctAnswer"]}",
                         style: const TextStyle(color: Colors.grey),
                       ),
                       actions: [
@@ -69,7 +69,7 @@ class _LevelScreenState extends State<LevelScreen> {
                               finishLevel();
                             }
                           },
-                          label: const Text("Holy shii", style: TextStyle(color: Colors.black)),
+                          label: const Text("Ok", style: TextStyle(color: Colors.black)),
                         )
                       ],
                     ),
