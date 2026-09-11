@@ -105,15 +105,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       child: Row(
         children: [
-          // Botón volver: regresa a la pantalla anterior
-          // En un PageView esto no navega hacia atrás sino
-          // que el usuario desliza. Si quisieras que sí
-          // navegue, usá Navigator.pop(context) acá.
-          IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.chevron_left,
-                color: Colors.white70, size: 28),
-          ),
           const Expanded(
             child: Text(
               'Ajustes',

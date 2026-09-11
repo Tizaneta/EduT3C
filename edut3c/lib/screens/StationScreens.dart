@@ -78,8 +78,19 @@ class StationScreens extends StatelessWidget {
                   ),
 
                   child: ElevatedButton(
-                    onPressed: () async {
-
+                  style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  foregroundColor: Colors.white,
+                  shadowColor: Colors.transparent,
+                  elevation: 0,
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                      ),
+                      ),
+                      onPressed: () async {
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
