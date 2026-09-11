@@ -3,7 +3,12 @@ import 'package:video_player/video_player.dart';
 
 class VideoBlock extends StatefulWidget{
   final String assetPath;
-  const VideoBlock({required this.assetPath});
+  final VoidCallback onVideoFinished;
+  const VideoBlock({
+    super.key,
+    required this.assetPath,
+    required this.onVideoFinished,
+    });
 
   @override
   State<VideoBlock> createState() => _VideoBlockState();
@@ -16,13 +21,18 @@ class _VideoBlockState extends State<VideoBlock>{
   @override
   void initState() {
     super.initState();
-
     controller = VideoPlayerController.asset(widget.assetPath)
     ..initialize().then((_) {
         setState(() {});
         controller.play();
       });
-  }
+    controller.addListener(() {
+      if (
+        controller.value.position >= controller.value.duration
+        ) {widget.onVideoFinished();}
+        }
+        );
+      }
 
   @override
   void dispose() {
