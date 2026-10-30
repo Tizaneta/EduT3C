@@ -312,9 +312,7 @@ class _MapAreaState extends State<_MapArea> {
 class _HotspotMarker extends StatelessWidget {
   final double size;
 
-  const _HotspotMarker({
-    this.size = 36,
-  });
+  const _HotspotMarker() : size = 36;
 
   @override
   Widget build(BuildContext context) {

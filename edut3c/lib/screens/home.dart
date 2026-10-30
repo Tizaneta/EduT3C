@@ -5,6 +5,9 @@ import 'SocialProfileScreen.dart';
 import 'HardwareIntroScreen.dart';
 import 'SettingsScreen.dart';
 import '../models/user.dart';
+import '../services/api_service.dart';
+import '../data/session.dart';
+import 'StoreScreen.dart';
 
 class Home extends StatefulWidget {
   final User user;
@@ -20,8 +23,30 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final PageController _controller = PageController();
-
+  late User _user;
   int currentPage = 0;
+
+  @override
+  void initState() {
+  super.initState();
+
+  _user = widget.user;
+
+  
+}
+
+Future<void> _refreshUser() async {
+  debugPrint('Actualizando usuario ${_user.id}');
+  final updatedUser = await ApiService.getUser(_user.id);
+  debugPrint('Bits recibidos: ${updatedUser.bits}');
+  if (!mounted) return;
+
+  setState(() {
+    _user = updatedUser;
+  });
+
+  Session.currentUser = updatedUser;
+}
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +56,8 @@ class _HomeState extends State<Home> {
       appBar: currentPage == 3
           ? null
           : _HomeAppBar(
-              user: widget.user,
+              user: _user,
             ),
-
       body: PageView(
         controller: _controller,
 
@@ -48,9 +72,21 @@ class _HomeState extends State<Home> {
           SoftwareScreen(),
           NetScreen(),
           SocialProfileScreen(
-            user: widget.user,
+            user: _user,
           ),
           SettingsScreen(),
+          StoreScreen(user: _user,
+          onPurchaseCompleted: _refreshUser,
+          onBackToHome: () {
+          _controller.animateToPage(
+          0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+    );
+  },
+  ),
+          
+          
         ],
       ),
     );
@@ -296,3 +332,4 @@ class _ResourceDisplay extends StatelessWidget {
     );
   }
 }
+
