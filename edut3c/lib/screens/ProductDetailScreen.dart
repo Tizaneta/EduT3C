@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/shop_product.dart';
 import '../services/api_service.dart';
-import '../utils/item_image.dart';
 import '../models/user.dart';
 import '../data/session.dart';
 
