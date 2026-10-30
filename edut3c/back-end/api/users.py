@@ -11,6 +11,7 @@ from models.user_achievement import UserAchievement
 from datetime import datetime, timedelta, timezone
 from services.player_service import PlayerService
 from services.achievement_service import AchievementService
+from services.level_service import LevelService
 
 # Para migrar los modelos nuevos a la base de datos:
 # flask db migrate -m "X" (es como un git add .)
@@ -165,10 +166,13 @@ def get_inventory(id):
     ).all()
 
     return jsonify([
-        user_item.item.to_dict()
+        {
+            **user_item.item.to_dict(),
+            "quantity": user_item.quantity
+        }
         for user_item in inventory
-    ])
-    
+    ])    
+
 # Endpoint para obtener todos los niveles del juego /GET
     
 @levels_bp.route("/levels")
@@ -201,37 +205,58 @@ def complete_level(id):
             "message": "Nivel no encontrado."
         }), 404
 
-    completed_level = UserLevel.query.filter_by(
+    # 1. Buscar el progreso existente del usuario en este nivel.
+    progress = UserLevel.query.filter_by(
         user_id=user.id,
-        level_id=game_level.id,
-        completed=True
+        level_id=game_level.id
     ).first()
 
-    if completed_level:
+    # 2. Si ya completó el nivel, no entregar recompensas otra vez.
+    if progress and progress.completed:
         return jsonify({
-            "message": "Nivel ya completado, no se recibirá recompensas."
+            "message": "Nivel ya completado, no se recibirán recompensas.",
+            "xp_gained": 0,
+            "bits_gained": 0,
+            "already_completed": True
         }), 200
 
-    bits_reward = game_level.bits_reward
+    # 3. Si todavía no existe progreso, crearlo.
+    if not progress:
+        progress = UserLevel(
+            user_id=user.id,
+            level_id=game_level.id,
+            completed=False,
+            incorrect_answers=0
+        )
+        db.session.add(progress)
+
+    # 4. Calcular los Bits descontando 10 por cada error.
+    bits_reward = max(
+        0,
+        game_level.bits_reward
+        - progress.incorrect_answers
+        * LevelService.BITS_PER_MISTAKE
+    )
+
+    # 5. Aplicar XP sin penalización por errores.
     xp_reward = PlayerService.apply_boost(
-    user,
-    game_level.xp_reward
-)
+        user,
+        game_level.xp_reward
+    )
+
     level_up = PlayerService.add_xp(
-    user,
-    xp_reward
-)
+        user,
+        xp_reward
+    )
+
+    # 6. Entregar las recompensas.
     user.bits += bits_reward
 
     unlocked = AchievementService.check_xp_achievements(user)
 
-    new_completion = UserLevel(
-        user_id=user.id,
-        level_id=game_level.id,
-        completed=True
-    )
+    # 7. Marcar el progreso existente como completado.
+    progress.completed = True
 
-    db.session.add(new_completion)
     db.session.commit()
 
     return jsonify({
@@ -592,3 +617,22 @@ def unlock_achievement(id):
     return jsonify({
         "message": "Logro desbloqueado."
     }), 201
+    
+# Manejo de errores en los niveles.
+    
+@levels_bp.route("/levels/<int:level_id>/mistake", methods=["POST"])
+def register_level_mistake(level_id):
+
+    data = request.get_json()
+
+    if not data or "user_id" not in data:
+        return jsonify({
+            "message": "Falta el id del usuario."
+        }), 400
+
+    result, status_code = LevelService.register_mistake(
+        user_id=data["user_id"],
+        level_id=level_id
+    )
+
+    return jsonify(result), status_code

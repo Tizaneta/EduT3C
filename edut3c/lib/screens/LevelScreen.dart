@@ -33,61 +33,145 @@ class _LevelScreenState extends State<LevelScreen> {
   bool canScroll = false;
   bool quizAnswered = false;
   int currentPage = 0;
+  bool isFinishing = false;
 
-  void startTimer() {
-    timer?.cancel();
-    timeLeft = 7;
-    timer = Timer.periodic(
-      const Duration(seconds: 1),
-          (timer) {
-        setState(() {
-          timeLeft--;
-          if (timeLeft <= 0) {
-            timer.cancel();
-            timeLeft = 7;
-            canScroll = true;
-            quizAnswered = true;
-            showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) {
-                  return PopScope(
-                    canPop: false,
-                    child: AlertDialog(
-                      backgroundColor: const Color(0xFF0D1B2A),
-                      title: const Text("Se acabó el tiempo, es una verdadera pena.", style: TextStyle(color: Colors.white)),
-                      content: Text(
-                        "La respuesta era ${widget.contenido[currentPage]["correctAnswer"]}",
-                        style: const TextStyle(color: Colors.grey),
-                      ),
-                      actions: [
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.cyan),
-                          onPressed: () {
-                            Navigator.pop(context);
-                            if (currentPage == widget.contenido.length - 1) {
-                              finishLevel();
-                            }
-                          },
-                          label: const Text("Ok", style: TextStyle(color: Colors.black)),
-                        )
-                      ],
-                    ),
-                  );
-                }
-            );
-          }
-        });
-      },
-    );
+Future<void> _handleAnswer(
+  String option,
+  String correctAnswer,
+) async {
+  if (quizAnswered) return;
+
+  final isCorrect = option == correctAnswer;
+
+  setState(() {
+    quizAnswered = true;
+    canScroll = true;
+  });
+
+  timer?.cancel();
+  timeLeft = 7;
+
+  if (!isCorrect) {
+    try {
+      await LevelService.registerMistake(
+        levelId: widget.backendLevelId,
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "No se pudo registrar el error. Revisá la conexión.",
+          ),
+        ),
+      );
+      return;
+    }
   }
 
-  Future<void> finishLevel() async {
-    final result = await LevelService.completeLevel(
-    levelId: widget.backendLevelId,
+  if (!mounted) return;
+  _showResultDialog(isCorrect, correctAnswer);
+}
+
+void startTimer() {
+  timer?.cancel();
+  timeLeft = 7;
+
+  timer = Timer.periodic(
+    const Duration(seconds: 1),
+    (timer) {
+      if (timeLeft <= 1) {
+        timer.cancel();
+        _handleTimeout();
+      } else {
+        setState(() {
+          timeLeft--;
+        });
+      }
+    },
   );
+}
+
+Future<void> _handleTimeout() async {
+  if (quizAnswered) return;
+
+  setState(() {
+    timeLeft = 7;
+    canScroll = true;
+    quizAnswered = true;
+  });
+
+  try {
+    await LevelService.registerMistake(
+      levelId: widget.backendLevelId,
+    );
+  } catch (e) {
     if (!mounted) return;
-    print(result);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          "No se pudo registrar el error. Revisá la conexión.",
+        ),
+      ),
+    );
+    return;
+  }
+
+  if (!mounted) return;
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) => PopScope(
+      canPop: false,
+      child: AlertDialog(
+        backgroundColor: const Color(0xFF0D1B2A),
+        title: const Text(
+          "Se acabó el tiempo, es una verdadera pena.",
+          style: TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          "La respuesta era "
+          "${widget.contenido[currentPage]["correctAnswer"]}",
+          style: const TextStyle(color: Colors.grey),
+        ),
+        actions: [
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.cyan,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+
+              if (currentPage == widget.contenido.length - 1) {
+                finishLevel();
+              }
+            },
+            label: const Text(
+              "Ok",
+              style: TextStyle(color: Colors.black),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+  
+
+  Future<void> finishLevel() async {
+  if (isFinishing) return;
+  isFinishing = true;
+
+  try {
+    final result = await LevelService.completeLevel(
+      levelId: widget.backendLevelId,
+    );
+
+    if (!mounted) return;
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -96,23 +180,48 @@ class _LevelScreenState extends State<LevelScreen> {
           canPop: false,
           child: AlertDialog(
             backgroundColor: const Color(0xFF0D1B2A),
-            title: const Text("¡Nivel completado!", style: TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold)),
-            content: Text("Ganaste ${result["xp_gained"]} XP\n Ganaste ${result["bits_gained"]} Bits", 
-            style: TextStyle(color: Colors.white)),
+            title: const Text(
+              "¡Nivel completado!",
+              style: TextStyle(
+                color: Colors.cyan,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            content: Text(
+              "Ganaste ${result["xp_gained"] ?? 0} XP\n"
+              "Ganaste ${result["bits_gained"] ?? 0} Bits",
+              style: const TextStyle(color: Colors.white),
+            ),
             actions: [
               ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.cyan),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text("Volver", style: TextStyle(color: Colors.black))
-              )
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.cyan,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  "Volver",
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
             ],
           ),
         );
       },
     );
+  } catch (e) {
+    isFinishing = false;
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("No se pudo completar el nivel: $e"),
+      ),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -242,17 +351,11 @@ class _LevelScreenState extends State<LevelScreen> {
                               padding: const EdgeInsets.only(bottom: 16.0),
                               child: InkWell(
                                 onTap: quizAnswered
-                                    ? null
-                                    : () {
-                                  setState(() {
-                                    quizAnswered = true;
-                                    timer?.cancel();
-                                    timeLeft = 7;
-                                    canScroll = true;
-                                  });
-                                  final correctAnswer = widget.contenido[index]["correctAnswer"];
-
-                                  _showResultDialog(option == correctAnswer, correctAnswer);
+                                ? null
+                                : () {
+                              final correctAnswer =
+                              widget.contenido[index]["correctAnswer"] as String;
+                              _handleAnswer(option, correctAnswer);
                                 },
                                 child: Container(
                                   width: double.infinity,

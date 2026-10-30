@@ -45,4 +45,7 @@ class Item(db.Model):
         "name": self.name,
         "description": self.description,
         "price": self.price,
+        "icon": self.icon,
+        "is_stackable": self.is_stackable,
+        "type": self.type
         }

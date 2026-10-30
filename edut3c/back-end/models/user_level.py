@@ -26,6 +26,12 @@ class UserLevel(db.Model):
         default=False
     )
     
+    incorrect_answers = db.Column(
+    db.Integer,
+    nullable=False,
+    default=0
+    )
+    
     user = db.relationship(
     "User",
     backref="completed_levels"
