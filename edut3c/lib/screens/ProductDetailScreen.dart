@@ -34,7 +34,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         elevation: 0,
         centerTitle: true,
         title: const Text(
-          'TIENDA',
+          'KIOS-T3C',
           style: TextStyle(
             color: Colors.white,
             fontSize: 15,

@@ -70,7 +70,7 @@ Future<void> _refreshUser() async {
         children: [
           HardwareIntroScreen(),
           SoftwareScreen(),
-          NetScreen(),
+          //TODO:NetScreen(),
           SocialProfileScreen(
             user: _user,
           ),

@@ -39,7 +39,6 @@ const _textDim      = Color(0xFF5C7185);
 // Si tu backend usa nombres distintos, cambialos acá.
 const List<_TabDef> _tabs = [
   _TabDef(label: 'BOOSTERS',  value: 'boost',    icon: Icons.bolt_rounded),
-  _TabDef(label: 'ÍTEMS',     value: 'item',     icon: Icons.inventory_2_outlined),
   _TabDef(label: 'AVATARES',  value: 'avatar',   icon: Icons.person_outline_rounded),
   _TabDef(label: 'MARCOS',    value: 'frame',    icon: Icons.crop_square_rounded),
   _TabDef(label: 'TÍTULOS',   value: 'title',    icon: Icons.emoji_events_outlined),
@@ -214,7 +213,7 @@ class _StoreBanner extends StatelessWidget {
                         color: _accentCyan, size: 28),
                     const SizedBox(width: 10),
                     Text(
-                      'TIENDA',
+                      'KIOS-T3C',
                       style: TextStyle(
                         color: _textPrimary,
                         fontSize: 32,
