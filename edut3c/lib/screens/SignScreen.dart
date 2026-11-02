@@ -227,11 +227,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
               end: Alignment.bottomCenter,
             ),
           ),
-          child: const Icon(
-            Icons.smart_toy_outlined, // Robot de aprendizaje TODO lo vamos a cambiar por el logo
-            color: Color(0xFF4FC3F7),
-            size: 64,
-          ),
+          child: ClipOval(
+          child: Image.asset(
+          'assets/images/singlogo.jpeg',
+          width: 2,
+          height: 2,
+          fit: BoxFit.cover,
+  ),
+),
         ),
       ),
     );

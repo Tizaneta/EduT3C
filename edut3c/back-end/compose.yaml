@@ -1,0 +1,39 @@
+services:
+  db:
+    image: mysql:8.4
+    container_name: edut3c_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: edut3c
+      MYSQL_USER: edut3c_user
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./edut3c.sql:/docker-entrypoint-initdb.d/edut3c.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build: .
+    container_name: edut3c_backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: edut3c
+      DB_USER: edut3c_user
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
