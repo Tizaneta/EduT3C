@@ -199,10 +199,12 @@ class _LoginScreenState extends State<LoginScreen> {
               end: Alignment.bottomCenter,
             ),
           ),
-          child: const Icon(
-            Icons.smart_toy_outlined,
-            color: Color(0xFF4FC3F7),
-            size: 64,
+          child: ClipOval(
+            child: Image.asset('assets/images/loglogo.jpeg',
+            width: 124,
+            height: 124,
+            fit: BoxFit.cover,
+            ),
           ),
         ),
       ),

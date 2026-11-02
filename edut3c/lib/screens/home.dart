@@ -8,6 +8,7 @@ import '../models/user.dart';
 import '../services/api_service.dart';
 import '../data/session.dart';
 import 'StoreScreen.dart';
+import 'InventoryScreen.dart';
 
 class Home extends StatefulWidget {
   final User user;
@@ -81,10 +82,9 @@ Future<void> _refreshUser() async {
           _controller.animateToPage(
           0,
           duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-    );
-  },
-  ),
+          curve: Curves.easeInOut,);},
+          ),
+          InventoryScreen(user: widget.user),
           
           
         ],

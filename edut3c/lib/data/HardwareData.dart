@@ -12,21 +12,21 @@ final cpuLevels = {
   1: LocalLevel(
     backendId: 1,
     contenido: [
-      {"type": "video", "path": "assets/videos/test_video2.mp4"},
+      {"type": "video", "path": "assets/videos/mp1.mp4"},
       {
         "type": "quiz",
         "question": "¿Qué hace el microprocesador?",
         "options": ["Guarda imágenes", "Procesa instrucciones", "Controla internet"],
         "correctAnswer": "Procesa instrucciones",
       },
-      {"type": "video", "path": "assets/videos/test_video2.mp4"},
+      {"type": "video", "path": "assets/videos/mp2.mp4"},
       {
         "type": "quiz",
         "question": "¿Con qué otro nombre se conoce al microprocesador?",
         "options": ["GPU", "RAM", "CPU"],
         "correctAnswer": "CPU",
       },
-      {"type": "video", "path": "assets/videos/test_video2.mp4"},
+      {"type": "video", "path": "assets/videos/mp3.mp4"},
       {
         "type": "quiz",
         "question": "¿Dónde se ubica físicamente el CPU en la placa madre?",

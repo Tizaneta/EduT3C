@@ -49,4 +49,14 @@ app.*.map.json
 
 **/venv
 backend/__pycache__/
-*.pycpip freeze > requirements.txt
+*.pyc
+
+# Backend
+
+.env
+**/.env
+**/.venv/
+**/venv/
+**/__pycache__/
+*.pyc
+*.pyo

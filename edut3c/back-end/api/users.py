@@ -469,13 +469,13 @@ def use_item(id):
 
     # Asignamos el multiplicador según la poción.
 
-    if item.name == "Pocion XP x1.5":
+    if item.name == "Monstec x1,5":
         user.xp_multiplier = 1.5
 
-    elif item.name == "Pocion XP x2":
+    elif item.name == "Monstec x2":
         user.xp_multiplier = 2.0
 
-    elif item.name == "Pocion XP x3":
+    elif item.name == "Monstec x3":
         user.xp_multiplier = 3.0
 
     else:
